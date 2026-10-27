@@ -15,6 +15,12 @@ You can export the report as Markdown or JSON.
 
 **Use it online:** https://tools.fivenumber.com/spfx-package-inspector/
 
+![Report for a package with no significant issues: summary, findings, deployment flags, components and bundle size](docs/report-clean-package.png)
+
+A larger package with 26 components. The inspector flags two third-party weather API hosts, and 108 old build files that no component references:
+
+![Report showing third-party domains, old build files, and the domains table grouped into third-party, Microsoft and documentation links](docs/report-third-party-domains.png)
+
 ## Privacy
 
 The package never leaves your browser. The page unzips it in the tab with the browser's built-in `DecompressionStream` and runs every check locally. Nothing is uploaded and there is no backend.
