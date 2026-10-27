@@ -1,0 +1,882 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SPFx Package Inspector, check an .sppkg before you approve it | fivenumber tools</title>
+<meta name="description" content="Drop an SPFx .sppkg file to see the API permissions it requests, the domains it calls, how it deploys and anything that looks like a secret. Free, runs in your browser.">
+<link rel="canonical" href="https://tools.fivenumber.com/spfx-package-inspector/">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://tools.fivenumber.com/spfx-package-inspector/">
+<meta property="og:title" content="SPFx Package Inspector">
+<meta property="og:description" content="Check an SPFx .sppkg before you approve it: API permissions, external domains, deployment scope, secrets. Your package never leaves your browser.">
+<meta property="og:image" content="https://tools.fivenumber.com/og-cover.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230e1728'/%3E%3Ctext x='16' y='21' font-family='ui-monospace,monospace' font-size='15' font-weight='700' fill='%236db0ff' text-anchor='middle'%3E5N%3C/text%3E%3C/svg%3E">
+<style>
+  @font-face{font-family:'IBM Plex Sans';font-style:normal;font-weight:400;font-display:swap;src:url('/fonts/ibm-plex-sans-400.woff2') format('woff2');}
+  @font-face{font-family:'IBM Plex Sans';font-style:normal;font-weight:500;font-display:swap;src:url('/fonts/ibm-plex-sans-500.woff2') format('woff2');}
+  @font-face{font-family:'IBM Plex Sans';font-style:normal;font-weight:600;font-display:swap;src:url('/fonts/ibm-plex-sans-600.woff2') format('woff2');}
+  @font-face{font-family:'IBM Plex Sans';font-style:normal;font-weight:700;font-display:swap;src:url('/fonts/ibm-plex-sans-700.woff2') format('woff2');}
+
+  :root{
+    --ground:#f7fafc; --surface:#ffffff; --surface-2:#edf2f7; --code-bg:#1a202c;
+    --border:#e2e8f0; --border-strong:#cbd5e0; --ink:#1a202c; --muted:#4a5568; --faint:#718096;
+    --blue:#2f6fed; --blue-ink:#1e56c6; --blue-soft:#eaf1fe; --blue-line:#c8dbfb;
+    --amber:#b8730d; --good:#1f9d57; --red:#d3455b;
+    --font:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;
+    --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    --shadow-sm:0 1px 2px rgba(26,32,44,.05); --shadow:0 1px 2px rgba(26,32,44,.04), 0 10px 24px -16px rgba(26,32,44,.26);
+    --shadow-lg:0 24px 60px -20px rgba(26,32,44,.4); --r:14px;
+  }
+  :root[data-theme="dark"]{
+    --ground:#1e1e1e; --surface:#252526; --surface-2:#2d2d30; --code-bg:#1a1a1a;
+    --border:#3c3c3c; --border-strong:#4a4a4a; --ink:#d4d4d4; --muted:#a0a0a0; --faint:#6e6e6e;
+    --blue:#3794ff; --blue-ink:#5aa9ff; --blue-soft:#12283f; --blue-line:#264a6e;
+    --amber:#d7ba7d; --good:#4ec9b0; --red:#f14c4c;
+    --shadow-sm:0 1px 2px rgba(0,0,0,.35); --shadow:0 1px 2px rgba(0,0,0,.3), 0 14px 30px -20px rgba(0,0,0,.7);
+    --shadow-lg:0 24px 60px -20px rgba(0,0,0,.8);
+  }
+  @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+    --ground:#1e1e1e; --surface:#252526; --surface-2:#2d2d30; --code-bg:#1a1a1a;
+    --border:#3c3c3c; --border-strong:#4a4a4a; --ink:#d4d4d4; --muted:#a0a0a0; --faint:#6e6e6e;
+    --blue:#3794ff; --blue-ink:#5aa9ff; --blue-soft:#12283f; --blue-line:#264a6e;
+    --amber:#d7ba7d; --good:#4ec9b0; --red:#f14c4c;
+    --shadow-sm:0 1px 2px rgba(0,0,0,.35); --shadow:0 1px 2px rgba(0,0,0,.3), 0 14px 30px -20px rgba(0,0,0,.7);
+    --shadow-lg:0 24px 60px -20px rgba(0,0,0,.8);
+  }}
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--font);font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased;}
+  a{color:var(--blue);text-decoration:none;} button{font-family:inherit;cursor:pointer;}
+  a:focus-visible,button:focus-visible,label.btn:focus-within{outline:2px solid var(--blue);outline-offset:2px;}
+  .ico{width:16px;height:16px;flex:none;vertical-align:-3px;}
+
+  /* header, matched to fivenumber.com */
+  .topbar{background:var(--surface);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:50;}
+  .hwrap{max-width:1000px;margin:0 auto;padding:0 22px;min-height:72px;display:flex;align-items:center;gap:8px;}
+  .brand{font-weight:700;font-size:26px;letter-spacing:-.01em;color:var(--ink);white-space:nowrap;line-height:1.2;}
+  .brand .t{color:var(--blue);font-weight:600;}
+  .nav{display:flex;align-items:center;gap:1px;margin-left:16px;}
+  .nav > a,.drop-t{background:none;border:0;font-family:inherit;font-size:15px;color:var(--muted);padding:9px 13px;border-radius:8px;display:inline-flex;align-items:center;gap:5px;cursor:pointer;white-space:nowrap;}
+  .nav > a:hover,.drop-t:hover{color:var(--blue);}
+  .nav > a.here{color:var(--ink);font-weight:600;}
+  .drop{position:relative;}
+  .drop-t svg{width:12px;height:12px;opacity:.65;transition:transform .15s;}
+  .drop:hover .drop-t svg,.drop.open .drop-t svg{transform:rotate(180deg);}
+  .drop-m{position:absolute;top:calc(100% - 2px);left:0;min-width:238px;background:var(--code-bg);border-radius:11px;box-shadow:0 14px 34px -10px rgba(0,0,0,.4);padding:7px;display:none;}
+  .drop:hover .drop-m,.drop.open .drop-m{display:block;}
+  .drop-m a{display:block;color:#cbd5e0;font-size:13.5px;padding:9px 12px;border-radius:7px;}
+  .drop-m a:hover{background:#2d3748;color:#fff;}
+  .htools{margin-left:auto;display:flex;align-items:center;gap:4px;}
+  .tbtn{background:transparent;border:0;color:var(--muted);font-size:14px;display:flex;gap:7px;align-items:center;padding:9px 11px;border-radius:9px;}
+  .tbtn:hover{color:var(--blue);background:var(--surface-2);}
+  .burger{display:none;background:none;border:0;color:var(--muted);padding:9px;border-radius:9px;}
+  .burger:hover{color:var(--blue);background:var(--surface-2);}
+  @media (max-width:900px){
+    .nav{display:none;position:absolute;top:100%;left:0;right:0;flex-direction:column;align-items:stretch;gap:0;margin:0;background:var(--surface);border-bottom:1px solid var(--border);box-shadow:var(--shadow);padding:8px;}
+    .nav.open{display:flex;}
+    .nav > a,.drop-t{width:100%;justify-content:space-between;font-size:15.5px;padding:11px 13px;}
+    .drop{width:100%;} .drop-m{position:static;display:none;background:var(--surface-2);box-shadow:none;margin:2px 0 6px;}
+    .drop.open .drop-m{display:block;} .drop:hover .drop-m{display:none;} .drop.open:hover .drop-m{display:block;}
+    .drop-m a{color:var(--muted);} .drop-m a:hover{background:var(--surface);color:var(--blue);}
+    .burger{display:flex;}
+  }
+
+  .wrap{max-width:1000px;margin:0 auto;padding:0 22px;}
+  .head{padding:38px 0 8px;max-width:760px;}
+  .crumb{font-size:13px;color:var(--faint);margin-bottom:14px;}
+  .crumb a{color:var(--muted);} .crumb a:hover{color:var(--blue);}
+  h1{font-size:29px;line-height:1.15;font-weight:800;letter-spacing:-.02em;margin:0 0 10px;}
+  .lede{font-size:16px;color:var(--muted);margin:0 0 4px;}
+  .privacy{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;color:var(--good);margin-top:14px;}
+  .privacy svg{width:14px;height:14px;}
+
+  .panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow);padding:20px;margin-top:22px;}
+  .btn{border:1px solid var(--border-strong);background:var(--surface);color:var(--ink);border-radius:9px;padding:8px 13px;font-size:13.5px;font-weight:600;display:inline-flex;align-items:center;gap:7px;min-height:40px;}
+  .btn:hover{background:var(--surface-2);}
+  .btn.primary{background:var(--blue);border-color:var(--blue);color:#fff;}
+  .btn.primary:hover{filter:brightness(1.05);background:var(--blue);}
+  .mono{font-family:var(--mono);}
+
+  /* drop zone */
+  .dz{border:2px dashed var(--border-strong);border-radius:var(--r);background:var(--surface);padding:46px 22px;display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center;margin-top:22px;transition:border-color .12s,background .12s;}
+  .dz.over{border-color:var(--blue);background:var(--blue-soft);}
+  .dz .big{width:58px;height:58px;border-radius:15px;background:var(--blue-soft);color:var(--blue);display:flex;align-items:center;justify-content:center;}
+  .dz .big svg{width:30px;height:30px;}
+  .dz .t1{font-size:20px;font-weight:600;}
+  .dz .or{font-size:13.5px;color:var(--faint);}
+  .dz .row{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;}
+  .dz .hint{font-size:12.5px;color:var(--faint);}
+  .vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;}
+
+  .status{display:none;align-items:flex-start;gap:11px;background:var(--blue-soft);border:1px solid var(--blue-line);border-radius:11px;padding:13px 15px;margin-top:18px;color:var(--blue-ink);font-size:14.5px;font-weight:600;}
+  .status svg{width:19px;height:19px;flex:none;margin-top:1px;}
+  .status.warn{background:color-mix(in srgb,var(--amber) 12%,transparent);border-color:color-mix(in srgb,var(--amber) 45%,transparent);color:var(--amber);}
+
+  .checks{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px;margin-top:14px;}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 18px;}
+  .card b{display:block;font-size:15px;margin-bottom:4px;}
+  .card span{font-size:13.5px;color:var(--muted);line-height:1.5;}
+  .sec-h{font-size:19px;font-weight:700;margin:34px 0 0;}
+
+  /* report */
+  .report{display:none;margin-top:22px;}
+  .rbar{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end;margin-bottom:14px;}
+  .sum{display:flex;flex-direction:column;gap:18px;}
+  .sum-top{display:flex;flex-wrap:wrap;justify-content:space-between;gap:14px;align-items:flex-start;}
+  .sum-file{font-family:var(--mono);font-size:13px;color:var(--faint);word-break:break-all;}
+  .sum h2{font-size:24px;margin:2px 0 4px;line-height:1.25;word-break:break-word;}
+  .sum-meta{font-size:13.5px;color:var(--muted);}
+  .verdict{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:11px;border:1px solid;font-weight:700;font-size:15px;}
+  .verdict small{display:block;font-weight:500;font-size:12.5px;}
+  .verdict svg{width:22px;height:22px;flex:none;}
+  .v-high{color:color-mix(in srgb,var(--red) 85%,var(--ink));background:color-mix(in srgb,var(--red) 9%,transparent);border-color:color-mix(in srgb,var(--red) 40%,transparent);}
+  .v-med{color:color-mix(in srgb,var(--amber) 85%,var(--ink));background:color-mix(in srgb,var(--amber) 10%,transparent);border-color:color-mix(in srgb,var(--amber) 40%,transparent);}
+  .v-ok{color:color-mix(in srgb,var(--good) 85%,var(--ink));background:color-mix(in srgb,var(--good) 10%,transparent);border-color:color-mix(in srgb,var(--good) 40%,transparent);}
+  .tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;}
+  .tile{border:1px solid var(--border);border-radius:10px;padding:10px 14px;}
+  .tile .n{font-size:26px;font-weight:700;line-height:1.2;}
+  .tile .l{font-size:12.5px;color:var(--muted);}
+  .c-high{color:color-mix(in srgb,var(--red) 85%,var(--ink));}
+  .c-med{color:color-mix(in srgb,var(--amber) 85%,var(--ink));}
+  .c-low{color:var(--muted);}
+  .c-ok{color:color-mix(in srgb,var(--good) 85%,var(--ink));}
+
+  .cols{display:flex;flex-wrap:wrap;gap:22px;align-items:flex-start;}
+  .cmain{flex:999 1 540px;min-width:0;}
+  .cside{flex:1 1 280px;min-width:0;}
+  .cols .panel{margin-top:22px;}
+  .ph{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px;}
+  .ph h3{margin:0;font-size:17px;font-weight:700;}
+  .filters{display:flex;flex-wrap:wrap;gap:6px;}
+  .fpill{border:1px solid var(--border-strong);background:var(--surface);color:var(--ink);border-radius:100px;padding:5px 13px;font-size:13px;font-weight:500;min-height:34px;}
+  .fpill[aria-pressed="true"]{background:var(--ink);color:var(--surface);border-color:var(--ink);}
+  .find{border:1px solid var(--border);border-radius:11px;padding:14px 15px;margin-top:10px;}
+  .find .fh{display:flex;flex-wrap:wrap;align-items:center;gap:9px;}
+  .find h4{margin:0;font-size:15px;font-weight:600;}
+  .find p{margin:8px 0 0;font-size:14px;color:var(--muted);line-height:1.55;}
+  .ev{margin-top:9px;background:var(--surface-2);border-radius:8px;padding:9px 11px;font-family:var(--mono);font-size:12.5px;overflow-x:auto;white-space:pre;color:var(--ink);}
+  .todo{margin-top:9px;font-size:14px;} .todo b{font-weight:600;}
+  .chip{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:3px 9px;border-radius:100px;}
+  .chip.high{background:color-mix(in srgb,var(--red) 13%,transparent);color:color-mix(in srgb,var(--red) 85%,var(--ink));}
+  .chip.med{background:color-mix(in srgb,var(--amber) 15%,transparent);color:color-mix(in srgb,var(--amber) 85%,var(--ink));}
+  .chip.low{background:var(--surface-2);color:var(--muted);}
+  .chip.ok{background:color-mix(in srgb,var(--good) 14%,transparent);color:color-mix(in srgb,var(--good) 85%,var(--ink));}
+  .chip.blue{background:var(--blue-soft);color:var(--blue-ink);}
+  .empty{font-size:14px;color:var(--muted);padding:6px 0;}
+
+  .tbl{overflow-x:auto;}
+  table{width:100%;border-collapse:collapse;font-size:13.5px;}
+  th{text-align:left;font-weight:600;color:var(--muted);padding:8px 10px 8px 0;border-bottom:1px solid var(--border);white-space:nowrap;}
+  td{padding:9px 10px 9px 0;border-bottom:1px solid var(--border);vertical-align:top;}
+  tr:last-child td{border-bottom:0;}
+  td.mono{font-size:12.8px;word-break:break-all;}
+  .note{margin-top:12px;font-size:13.5px;line-height:1.55;background:var(--blue-soft);border:1px solid var(--blue-line);border-radius:9px;padding:10px 13px;}
+  dl.kv{margin:0;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:9px 12px;font-size:14px;}
+  dl.kv dt{color:var(--muted);} dl.kv dd{margin:0;font-weight:600;text-align:right;}
+  .comp{padding:9px 0;border-bottom:1px solid var(--border);} .comp:last-child{border-bottom:0;}
+  .comp b{font-size:14px;display:block;word-break:break-word;} .comp span{display:block;font-size:12.5px;color:var(--muted);}
+  .bar{height:7px;border-radius:4px;background:var(--surface-2);margin-top:4px;} .bar i{display:block;height:7px;border-radius:4px;background:var(--blue);}
+  .brow{margin-top:10px;font-size:12.8px;} .brow .bn{display:flex;justify-content:space-between;gap:8px;} .brow .bn span:first-child{font-family:var(--mono);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  ul.passed{margin:0;padding-left:18px;font-size:13.5px;line-height:1.75;color:var(--muted);}
+
+  footer{border-top:1px solid var(--border);margin-top:50px;padding:24px 0 44px;}
+  footer .fx{display:flex;flex-wrap:wrap;align-items:center;gap:12px 20px;color:var(--faint);font-size:13px;}
+  footer a{color:var(--muted);} footer a:hover{color:var(--blue);}
+  footer .fx .spacer{flex:1 1 auto;}
+
+  /* shared feedback button + dialog (portable across tools) */
+  .fbbtn{gap:6px;background:var(--blue);border:1px solid var(--blue);color:#fff;padding:8px 14px;font-weight:600;border-radius:9px;}
+  .fbbtn:hover{background:var(--blue);color:#fff;filter:brightness(1.08);}
+  @media (max-width:600px){ .fbbtn .fbtxt{display:none;} .fbbtn{padding:8px 10px;} }
+  dialog.fbdlg{border:0;border-radius:16px;padding:0;max-width:520px;width:calc(100% - 32px);background:var(--surface);color:var(--ink);box-shadow:var(--shadow-lg);}
+  dialog.fbdlg::backdrop{background:rgba(0,0,0,.5);}
+  .fbhead{display:flex;align-items:center;justify-content:space-between;padding:16px 22px;border-bottom:1px solid var(--border);}
+  .fbhead h2{margin:0;font-size:17px;font-weight:700;}
+  .fbx{background:none;border:0;font-size:26px;line-height:1;color:var(--faint);cursor:pointer;padding:0 2px;}
+  .fbx:hover{color:var(--ink);}
+  .fbbody{padding:18px 22px 22px;}
+  .fbbody .intro{margin:0 0 16px;font-size:13px;color:var(--muted);line-height:1.55;}
+  .fbfield{margin-bottom:13px;}
+  .fbfield label{display:block;font-size:12.5px;font-weight:600;color:var(--muted);margin-bottom:6px;}
+  .fbfield .req{color:var(--blue);} .fbfield .opt{color:var(--faint);font-weight:400;}
+  .fbfield input,.fbfield textarea{width:100%;box-sizing:border-box;border:1px solid var(--border-strong);border-radius:9px;background:var(--surface-2);color:var(--ink);font-family:inherit;font-size:14px;padding:10px 12px;}
+  .fbfield input:focus,.fbfield textarea:focus{outline:2px solid var(--blue);outline-offset:1px;border-color:var(--blue);}
+  .fbfield textarea{min-height:100px;resize:vertical;}
+  .fbcheck{display:flex;gap:9px;align-items:flex-start;font-size:13px;color:var(--muted);margin:2px 0 4px;cursor:pointer;}
+  .fbcheck input{margin-top:3px;flex:none;}
+  .fbcheck b{color:var(--ink);font-weight:600;display:block;}
+  .fbrow{display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin-top:16px;}
+  .fbsubmit{background:var(--blue);border:1px solid var(--blue);color:#fff;border-radius:9px;padding:9px 16px;font-size:14px;font-weight:600;display:inline-flex;align-items:center;gap:7px;cursor:pointer;}
+  .fbsubmit:hover{filter:brightness(1.06);} .fbsubmit:disabled{opacity:.6;cursor:default;}
+  .fbstatus{font-size:12.5px;display:none;}
+  .fbthanks{display:none;}
+  .fbthanks .ok{display:flex;align-items:center;gap:10px;font-size:14.5px;font-weight:650;color:var(--good);}
+  .linklike{background:none;border:0;font-family:inherit;font-size:13px;color:var(--muted);cursor:pointer;padding:0;}
+  .linklike:hover{color:var(--blue);}
+</style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebApplication",
+      "name": "SPFx Package Inspector",
+      "url": "https://tools.fivenumber.com/spfx-package-inspector/",
+      "applicationCategory": "DeveloperApplication",
+      "operatingSystem": "Any (web browser)",
+      "browserRequirements": "Requires JavaScript",
+      "description": "Check an SPFx .sppkg package before you approve it: API permission requests, external domains, deployment scope, components, bundle size and possible secrets.",
+      "isAccessibleForFree": true,
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "fivenumber.com",
+        "url": "https://www.fivenumber.com/"
+      }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Five Number tools",
+          "item": "https://tools.fivenumber.com/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "SPFx Package Inspector",
+          "item": "https://tools.fivenumber.com/spfx-package-inspector/"
+        }
+      ]
+    }
+  ]
+}
+</script>
+</head>
+<body data-tool="SPFx Package Inspector">
+  <header class="topbar">
+    <div class="hwrap">
+      <a class="brand" href="/">Five Number <span class="t">tools</span></a>
+      <nav class="nav" id="nav">
+        <a href="https://www.fivenumber.com/">Home</a>
+        <div class="drop">
+          <button class="drop-t" type="button">Topics <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg></button>
+          <div class="drop-m">
+            <a href="https://www.fivenumber.com/category/copilot/">Copilot</a>
+            <a href="https://www.fivenumber.com/category/sharepoint-online/">SharePoint Online</a>
+            <a href="https://www.fivenumber.com/category/microsoft-365/">Microsoft 365</a>
+            <a href="https://www.fivenumber.com/category/entra-id/">Entra ID</a>
+            <a href="https://www.fivenumber.com/pnp-powershell/">PnP PowerShell</a>
+            <a href="https://www.fivenumber.com/tag/governance/">Governance</a>
+          </div>
+        </div>
+        <div class="drop">
+          <button class="drop-t" type="button">Solutions <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg></button>
+          <div class="drop-m">
+            <a href="https://www.fivenumber.com/microsoft-search-query-tool/">Microsoft Search Query Tool</a>
+            <a href="https://www.fivenumber.com/pnp-powershell-command-generator/">PnP PowerShell Generator</a>
+            <a href="https://www.fivenumber.com/user-access-explorer/">User Access Explorer</a>
+            <a href="https://www.fivenumber.com/sharing-link-auditor/">Sharing Link Auditor</a>
+            <a href="https://www.fivenumber.com/five-number-lightbox-wordpress-plugin/">Five Number Lightbox</a>
+          </div>
+        </div>
+        <a href="/" class="here">Tools</a>
+        <a href="https://www.fivenumber.com/about/">About</a>
+        <a href="https://www.fivenumber.com/contact/">Contact</a>
+      </nav>
+      <div class="htools">
+        <button class="tbtn fbbtn" id="fbOpen" title="Send feedback"><svg aria-hidden="true" class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg><span class="fbtxt">Feedback</span></button>
+        <button class="tbtn" id="themeBtn" title="Toggle theme" aria-label="Toggle theme"><svg aria-hidden="true" class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></button>
+        <button class="burger" id="burger" title="Menu" aria-label="Menu"><svg aria-hidden="true" class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
+      </div>
+    </div>
+  </header>
+
+  <div class="wrap">
+  <main>
+    <div class="head">
+      <div class="crumb"><a href="/">Five Number tools</a> &rsaquo; SPFx Package Inspector</div>
+      <h1>SPFx Package Inspector</h1>
+      <p class="lede">Check an SPFx package before you approve it. Drop an <span class="mono" style="font-size:14px;">.sppkg</span> file to see the API permissions it requests, the domains its code talks to, how it deploys, and anything that looks like a secret.</p>
+      <span class="privacy"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Your package never leaves your browser. It is unzipped and checked in this tab.</span>
+    </div>
+    <noscript><p style="background:color-mix(in srgb,var(--amber) 12%,transparent);border:1px solid var(--amber);color:var(--amber);padding:11px 14px;border-radius:10px;font-size:13.5px;margin:16px 0;">This tool needs JavaScript to read packages. Please turn it on and reload the page.</p></noscript>
+
+    <section id="start">
+      <div class="dz" id="dz">
+        <div class="big"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4"/><path d="M7 9l5-5 5 5"/><path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/></svg></div>
+        <div class="t1">Drop a .sppkg file here</div>
+        <div class="or">or</div>
+        <div class="row">
+          <label class="btn primary" for="file">Choose file<input type="file" id="file" class="vh" accept=".sppkg"></label>
+          <button type="button" class="btn" id="btnSample">Try a sample package</button>
+        </div>
+        <div class="hint">.sppkg only &middot; up to 100 MB &middot; nothing is uploaded</div>
+      </div>
+      <div class="status" id="status" role="status" aria-live="polite"></div>
+
+      <h2 class="sec-h">What it checks</h2>
+      <div class="checks">
+        <div class="card"><b>API permission requests</b><span>Every Graph or custom API scope the package asks for, rated by how much data it reaches.</span></div>
+        <div class="card"><b>Domains in the code</b><span>Hosts found in the shipped JavaScript, split into Microsoft, third-party, and documentation links.</span></div>
+        <div class="card"><b>Deployment scope</b><span>Tenant-wide availability, extensions that switch on for every site, and code loaded from outside the package.</span></div>
+        <div class="card"><b>Secrets and keys</b><span>Strings shaped like client secrets, storage keys, SAS tokens, private keys and API keys. Values are masked.</span></div>
+        <div class="card"><b>Components</b><span>Every web part, extension and library in the package, with its ID, version and supported hosts.</span></div>
+        <div class="card"><b>Bundle hygiene</b><span>Bundle size, source maps, and old build files left in the package.</span></div>
+      </div>
+    </section>
+
+    <section class="report" id="report" aria-label="Inspection report">
+      <div class="rbar">
+        <button type="button" class="btn" id="btnMd">Export Markdown</button>
+        <button type="button" class="btn" id="btnJson">Export JSON</button>
+        <button type="button" class="btn primary" id="btnAgain">Inspect another</button>
+      </div>
+      <div class="panel sum" id="sum"></div>
+      <div class="cols">
+        <div class="cmain">
+          <div class="panel">
+            <div class="ph"><h3>Findings</h3><div class="filters" id="filters" role="group" aria-label="Filter findings by severity"></div></div>
+            <div id="findings"></div>
+          </div>
+          <div class="panel"><div class="ph"><h3>API permission requests</h3></div><div id="perms"></div></div>
+          <div class="panel"><div class="ph"><h3>Domains in the code</h3></div><div id="domains"></div></div>
+        </div>
+        <aside class="cside">
+          <div class="panel"><div class="ph"><h3>Deployment</h3></div><div id="deploy"></div></div>
+          <div class="panel"><div class="ph"><h3 id="compH">Components</h3></div><div id="comps"></div></div>
+          <div class="panel"><div class="ph"><h3>Bundle</h3></div><div id="bundle"></div></div>
+          <div class="panel"><div class="ph"><h3 id="passH">Checks passed</h3></div><div id="passed"></div></div>
+        </aside>
+      </div>
+    </section>
+    </main>
+  <footer>
+      <div class="fx">
+        <span>Built by <a href="https://fivenumber.com" target="_blank" rel="noopener">fivenumber.com</a></span>
+        <span>&middot;</span>
+        <a href="/">All tools</a>
+        <a href="https://github.com/gvijaikumar9/spfx-package-inspector" target="_blank" rel="noopener">Source (MIT)</a>
+        <a href="https://fivenumber.com" target="_blank" rel="noopener">Blog</a>
+        <a href="https://www.linkedin.com/newsletters/copilot-governed" target="_blank" rel="noopener">Newsletter</a>
+        <button type="button" class="linklike" id="discOpen">Disclaimer</button>
+        <span class="spacer"></span>
+        <span>Runs in your browser.</span>
+      </div>
+    </footer>
+  </div>
+
+  <dialog id="discDialog" class="fbdlg" aria-label="Disclaimer">
+    <div class="fbhead"><h2>Disclaimer</h2><button class="fbx" id="discClose" type="button" aria-label="Close">&times;</button></div>
+    <div class="fbbody">
+      <p style="margin:0 0 12px;font-size:13.5px;color:var(--muted);line-height:1.6;">These tools are provided free and as-is, with no warranty of any kind. Results are best-effort and can be incomplete or out of date, so always verify them against official Microsoft documentation before you act on them.</p>
+      <p style="margin:0 0 12px;font-size:13.5px;color:var(--muted);line-height:1.6;">This inspector reads a package statically. A clean report does not prove a package is safe, and a finding does not prove it is malicious. Use it to decide what to ask the vendor or developer.</p>
+      <p style="margin:0;font-size:13.5px;color:var(--muted);line-height:1.6;">fivenumber tools is an independent project and is not affiliated with, sponsored by, or endorsed by Microsoft. Microsoft, Microsoft&nbsp;365, SharePoint, Entra, OneDrive and Copilot are trademarks of the Microsoft group of companies.</p>
+    </div>
+  </dialog>
+
+  <dialog id="fbDialog" class="fbdlg" aria-label="Send feedback">
+    <div class="fbhead"><h2>Send feedback</h2><button class="fbx" id="fbClose" type="button" aria-label="Close">&times;</button></div>
+    <div class="fbbody">
+      <p class="intro">Found this useful, or hit a snag? Tell me what worked and what would make it better. Your note comes straight to me.</p>
+      <form id="fbForm" novalidate>
+        <input type="hidden" name="access_key" value="ba20bdf3-788e-400e-a5b8-33d2575d127e">
+        <input type="hidden" name="subject" id="fbSubject" value="New Five Number tools feedback">
+        <input type="hidden" name="from_name" id="fbFrom" value="Five Number tools">
+        <input type="hidden" name="tool" id="fbTool" value="">
+        <input type="hidden" name="page" id="fbPage" value="">
+        <input type="checkbox" name="botcheck" id="fbBot" tabindex="-1" autocomplete="off" style="display:none !important;">
+        <div class="fbfield"><label>Name <span class="req">*</span></label><input name="name" id="fbName" required placeholder="Your name"></div>
+        <div class="fbfield"><label>Email <span class="req">*</span></label><input type="email" name="email" id="fbEmail" required placeholder="you@example.com"></div>
+        <div class="fbfield"><label>Role / Company <span class="opt">(optional)</span></label><input name="role" placeholder="e.g. SharePoint Admin, Contoso"></div>
+        <div class="fbfield"><label>Your feedback <span class="req">*</span></label><textarea name="message" id="fbMsg" required placeholder="What did you use it for? What worked well, or what would make it better?"></textarea></div>
+        <label class="fbcheck"><input type="checkbox" name="consent_to_share" value="Yes, may be shared publicly as a testimonial"><span><b>You may share my feedback publicly as a testimonial</b>Optional. Leave unticked to keep it private.</span></label>
+        <div class="fbrow">
+          <button type="submit" class="fbsubmit" id="fbSubmit">Send feedback</button>
+          <span class="fbstatus" id="fbStatus"></span>
+        </div>
+      </form>
+      <div class="fbthanks" id="fbThanks"><div class="ok"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px;flex:none;"><path d="M20 6 9 17l-5-5"/></svg>Thanks, your feedback was sent.</div><p style="margin:8px 0 0;font-size:12.5px;color:var(--muted);">I read every note. If you left your email, I may follow up.</p></div>
+    </div>
+  </dialog>
+
+<script>
+  // ---- theme ----
+  var TKEY='pnp_theme';
+  function tget(){try{return JSON.parse(localStorage.getItem(TKEY));}catch(e){return null;}}
+  function tset(v){try{localStorage.setItem(TKEY,JSON.stringify(v));}catch(e){}}
+  var th=tget(); if(th) document.documentElement.setAttribute('data-theme',th);
+  document.getElementById('themeBtn').addEventListener('click',function(){
+    var d=document.documentElement,c=d.getAttribute('data-theme');
+    var n=c==='dark'?'light':(c==='light'?'dark':(matchMedia('(prefers-color-scheme: dark)').matches?'light':'dark'));
+    d.setAttribute('data-theme',n); tset(n);
+  });
+  // nav: mobile burger + dropdown toggles
+  var burger=document.getElementById('burger'), nav=document.getElementById('nav');
+  if(burger) burger.addEventListener('click',function(e){ e.stopPropagation(); nav.classList.toggle('open'); });
+  document.querySelectorAll('.drop-t').forEach(function(btn){
+    btn.addEventListener('click',function(e){
+      e.stopPropagation();
+      var d=btn.parentElement, wasOpen=d.classList.contains('open');
+      document.querySelectorAll('.drop').forEach(function(x){ x.classList.remove('open'); });
+      if(!wasOpen) d.classList.add('open');
+    });
+  });
+  document.addEventListener('click',function(){ document.querySelectorAll('.drop').forEach(function(x){ x.classList.remove('open'); }); });
+
+  function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
+  function kb(n){ return n>=1048576 ? (n/1048576).toFixed(2)+' MB' : (n>=1024 ? (n/1024).toFixed(1)+' KB' : n+' B'); }
+
+  // ---- zip reader (central directory + deflate-raw via DecompressionStream, no library) ----
+  var MAX_FILE=100*1048576, MAX_ENTRY=60*1048576, MAX_TOTAL=300*1048576;
+  function openZip(buf){
+    var dv=new DataView(buf), u8=new Uint8Array(buf), eocd=-1;
+    for(var i=u8.length-22;i>=Math.max(0,u8.length-22-65535);i--){ if(dv.getUint32(i,true)===0x06054b50){ eocd=i; break; } }
+    if(eocd<0) throw new Error('This file is not a valid .sppkg. An .sppkg is a ZIP package, and no ZIP directory was found.');
+    var count=dv.getUint16(eocd+10,true), p=dv.getUint32(eocd+16,true);
+    if(p===0xFFFFFFFF||count===0xFFFF) throw new Error('This package uses the ZIP64 format, which this tool does not read yet.');
+    var dec=new TextDecoder('utf-8'), entries=[];
+    for(var n=0;n<count;n++){
+      if(p+46>u8.length||dv.getUint32(p,true)!==0x02014b50) throw new Error('The package directory is damaged.');
+      var nlen=dv.getUint16(p+28,true), xlen=dv.getUint16(p+30,true), clen=dv.getUint16(p+32,true);
+      var name=dec.decode(u8.subarray(p+46,p+46+nlen)).replace(/\\/g,'/');
+      entries.push({ name:name, flags:dv.getUint16(p+8,true), method:dv.getUint16(p+10,true),
+        csize:dv.getUint32(p+20,true), size:dv.getUint32(p+24,true), lho:dv.getUint32(p+42,true) });
+      p+=46+nlen+xlen+clen;
+    }
+    entries=entries.filter(function(e){ return !/\/$/.test(e.name); });
+    var budget=MAX_TOTAL;
+    async function readBytes(e){
+      if(e.flags&1) throw new Error('encrypted entry');
+      if(e.size>MAX_ENTRY||e.size>budget) throw new Error('entry too large');
+      var lh=e.lho;
+      if(lh+30>u8.length||dv.getUint32(lh,true)!==0x04034b50) throw new Error('bad local header');
+      var start=lh+30+dv.getUint16(lh+26,true)+dv.getUint16(lh+28,true);
+      if(start+e.csize>u8.length) throw new Error('truncated entry');
+      var data=u8.subarray(start,start+e.csize);
+      budget-=e.size;
+      if(e.method===0) return data;
+      if(e.method!==8) throw new Error('unsupported compression');
+      var ds=new DecompressionStream('deflate-raw');
+      var out=await new Response(new Blob([data]).stream().pipeThrough(ds)).arrayBuffer();
+      return new Uint8Array(out);
+    }
+    return { entries:entries, readText: async function(e){ var b=await readBytes(e); return dec.decode(b).replace(/^﻿/,''); } };
+  }
+
+  // ---- reference data ----
+  var ASSET_LIB='https://spclientsideassetlibrary/';
+  var MS_DOMAINS=['microsoft.com','microsoftonline.com','office.com','office.net','office365.com','sharepoint.com','sharepointonline.com','sharepoint-df.com','onmicrosoft.com','outlook.com','live.com','live.net','login.windows.net','graph.windows.net','azure.com','azure.net','msecnd.net','msauth.net','msftauth.net','msocdn.com','aka.ms','bing.com','cloud.microsoft','static.microsoft','svc.ms','microsoft365.com','onenote.com','skype.com','visualstudio.com','powerapps.com','powerbi.com','dynamics.com','yammer.com','msidentity.com','windowsazure.com','spoprod-a.akamaihd.net'];
+  // Azure suffixes anyone can host on: a customer or vendor resource, not Microsoft itself
+  var CUSTOMER_HOSTED=['azurewebsites.net','cloudapp.azure.com','cloudapp.net','core.windows.net','azureedge.net','azurefd.net','azure-api.net','azurestaticapps.net','trafficmanager.net','servicebus.windows.net','database.windows.net','vault.azure.net','azurecontainerapps.io','azurecr.io'];
+  // hosts that show up in bundles as licence headers, error-message links or XML namespaces, not as calls
+  var DOC_DOMAINS=['w3.org','reactjs.org','react.dev','fb.me','github.com','mozilla.org','npmjs.com','npmjs.org','example.com','example.org','example.net','schema.org','json-schema.org','openxmlformats.org','purl.org','xmlsoap.org','unicode.org','tc39.es','babeljs.io','lodash.com','momentjs.com','typescriptlang.org','nodejs.org','webpack.js.org','ecma-international.org','whatwg.org','ietf.org','iana.org','apache.org','opensource.org','mit-license.org','feross.org','fluentui.dev','developer.microsoft.com','learn.microsoft.com','docs.microsoft.com','stackoverflow.com','jsperf.com','pnp.github.io','localhost','127.0.0.1'];
+  function hostIn(h,list){ return list.some(function(d){ return h===d||h.slice(-(d.length+1))==='.'+d; }); }
+  function hostGroup(h){
+    if(hostIn(h,CUSTOMER_HOSTED)) return 'third';
+    if(hostIn(h,['developer.microsoft.com','learn.microsoft.com','docs.microsoft.com'])) return 'docs';
+    return hostIn(h,MS_DOMAINS)?'ms':(hostIn(h,DOC_DOMAINS)?'docs':'third');
+  }
+
+  // Graph scope reach. SPFx grants are delegated: the user's own access is the ceiling, but the grant is tenant-wide.
+  function rateScope(resource,scope){
+    var r=(resource||'').toLowerCase(), s=(scope||'').toLowerCase();
+    var graph=r==='microsoft graph'||r.indexOf('graph.microsoft.com')>=0||r==='00000003-0000-0000-c000-000000000000';
+    if(r==='windows azure active directory'||r.indexOf('graph.windows.net')>=0) return {lvl:'Medium',why:'Azure AD Graph is deprecated. The package should move to Microsoft Graph.'};
+    if(!graph) return {lvl:'Medium',why:'A custom or third-party API. Confirm what it is, who runs it, and what the scope allows.'};
+    if(/readwrite\.all$|^directory\.(readwrite|accessasuser)|^rolemanagement|^application\.readwrite|^approleassignment|fullcontrol|^sites\.manage\.all|^mail\.send|^mail\.readwrite|^mailboxsettings\.readwrite|^policy\.|^domain\.|^privilegedaccess|^chat\.readwrite|^user\.readwrite\.all|^group\.readwrite/.test(s))
+      return {lvl:'High',why:'Can change or send data across the tenant, or read the directory, on behalf of any user who loads the page.'};
+    if(s==='sites.selected') return {lvl:'Low',why:'Only reaches sites an admin grants explicitly.'};
+    if(/^(user\.read|user\.readbasic\.all|profile|openid|email|offline_access|people\.read|presence\.read)$/.test(s)) return {lvl:'Low',why:'Basic profile or directory lookup data.'};
+    if(/\.read\.all$/.test(s)) return {lvl:'Medium',why:'Reads every item of this kind the signed-in user can access, not only the current site.'};
+    return {lvl:'Medium',why:(/readwrite/.test(s)?'Reads and changes':'Reads')+' the signed-in user’s own data of this kind.'};
+  }
+
+  var COMP_LABEL={WebPart:'Web part',Library:'Library',AdaptiveCardExtension:'Adaptive Card Extension',ApplicationCustomizer:'Application customizer',FieldCustomizer:'Field customizer',ListViewCommandSet:'ListView command set',FormCustomizer:'Form customizer',SearchQueryModifier:'Search query modifier'};
+
+  // ---- secret patterns ----
+  var SECRETS=[
+    {id:'entra',lvl:'High',title:'Looks like an Entra ID client secret',re:/(?:^|[\\'"`\s>=:(,)])([a-zA-Z0-9_~.]{3}\dQ~[a-zA-Z0-9_~.\-]{31,34})(?=$|[\\'"`\s<),])/g,g:1,
+      detail:'A string in the Entra ID (Azure AD) client secret format was found. Anyone who can load the page can read shipped JavaScript.',
+      fix:'Reject the package. The secret must be rotated in Entra ID and the call moved behind a server-side API.'},
+    {id:'storage',lvl:'High',title:'Azure Storage account key or connection string',re:/AccountKey=([A-Za-z0-9+\/]{40,}={0,2})/g,g:1,
+      detail:'An Azure Storage account key gives full control of the storage account to whoever reads it.',
+      fix:'Reject the package. Rotate the storage key and use a managed identity or short-lived SAS from a server.'},
+    {id:'sas',lvl:'High',title:'Azure SAS token',re:/[?&]sv=\d{4}-\d{2}-\d{2}[^"'`\s]*?[&?]sig=([A-Za-z0-9%+\/=]{20,})/g,g:1,
+      detail:'A shared access signature grants access to Azure storage until it expires, to anyone who has it.',
+      fix:'Check its expiry and permissions. Revoke it if long-lived, and issue SAS tokens from a server at runtime.'},
+    {id:'pkey',lvl:'High',title:'Private key',re:/-----BEGIN (?:RSA |EC |DSA |OPENSSH |ENCRYPTED )?PRIVATE KEY-----/g,g:0,
+      detail:'A private key block is embedded in the package.',
+      fix:'Reject the package. The key must be treated as compromised and replaced.'},
+    {id:'aws',lvl:'High',title:'AWS access key',re:/\b((?:AKIA|ASIA)[0-9A-Z]{16})\b/g,g:1,
+      detail:'An AWS access key ID was found. It is usually paired with a secret key nearby.',
+      fix:'Ask the vendor to rotate it and move the call behind a server.'},
+    {id:'gh',lvl:'High',title:'GitHub token',re:/\b(gh[pousr]_[A-Za-z0-9]{36,})\b/g,g:1,
+      detail:'A GitHub personal access or app token was found.',
+      fix:'Ask the vendor to revoke it.'},
+    {id:'slack',lvl:'High',title:'Slack token',re:/\b(xox[baprs]-[A-Za-z0-9-]{10,})/g,g:1,
+      detail:'A Slack API token was found.',
+      fix:'Ask the vendor to revoke it.'},
+    {id:'gkey',lvl:'Medium',title:'Google API key',re:/\b(AIza[0-9A-Za-z_\-]{35})\b/g,g:1,
+      detail:'Browser Google API keys are often meant to be public (for example Maps), but they should be restricted to known referrers.',
+      fix:'Ask the vendor whether the key is referrer-restricted.'},
+    {id:'jwt',lvl:'Medium',title:'Embedded token (JWT)',re:/\b(eyJ[A-Za-z0-9_\-]{10,}\.eyJ[A-Za-z0-9_\-]{10,}\.[A-Za-z0-9_\-]{10,})/g,g:1,
+      detail:'A signed token is embedded in the code. If it is still valid, anyone can replay it.',
+      fix:'Ask what the token is for and whether it has expired.'}
+  ];
+  var GENERIC=/["']?\b(client_?secret|api_?key|apikey|access_?token|auth_?token|subscription_?key|password|passwd|secret)\b["']?\s*[:=]\s*["'`]([^"'`\s]{8,200})["'`]/gi;
+  var NOT_SECRET=/^(password|secret|text|new-password|current-password|undefined|null|true|false|string|hidden)$|placeholder|your|xxxx|<|\{\{|\$\{|process\.env|^[*•.]+$/i;
+  function entropy(s){ var m={},h=0; for(var i=0;i<s.length;i++) m[s[i]]=(m[s[i]]||0)+1; for(var k in m){ var p=m[k]/s.length; h-=p*Math.log2(p);} return h; }
+  function mask(v){ v=String(v); return v.length<=6 ? '••••' : v.slice(0,4)+'•••••••• ('+v.length+' chars)'; }
+  function where(text,idx){ var line=1,last=-1; for(var i=0;i<idx;i++){ if(text.charCodeAt(i)===10){ line++; last=i; } } return 'line '+line+', col '+(idx-last); }
+  function snippet(text,idx,len,secret){
+    var a=Math.max(0,idx-40), b=Math.min(text.length,idx+len+40);
+    var s=text.slice(a,idx)+(secret?mask(text.substr(idx,len)):text.substr(idx,len))+text.slice(idx+len,b);
+    return (a>0?'…':'')+s.replace(/\s+/g,' ')+(b<text.length?'…':'');
+  }
+
+  // ---- analysis ----
+  async function analyze(pkg){
+    var byName={}; pkg.entries.forEach(function(e){ byName[e.name.toLowerCase()]=e; });
+    var amE=byName['appmanifest.xml'];
+    if(!amE) throw new Error('No AppManifest.xml was found, so this is not an SPFx package. Is it an add-in (.app) or a different ZIP?');
+    var skipped=[];
+    async function text(e){ try{ return await pkg.readText(e); }catch(err){ skipped.push(e.name); return null; } }
+    function xml(t){ var d=new DOMParser().parseFromString(t,'application/xml'); return d.getElementsByTagName('parsererror').length?null:d; }
+    function all(d,tag){ return Array.prototype.slice.call(d.getElementsByTagNameNS('*',tag)); }
+
+    var amT=await text(amE), am=amT&&xml(amT);
+    if(!am) throw new Error('AppManifest.xml could not be read.');
+    var app=all(am,'App')[0]; if(!app) throw new Error('AppManifest.xml has no <App> element.');
+    var R={ file:pkg.fileName, fileSize:pkg.fileSize, sample:!!pkg.sample, findings:[], passed:[], skipped:skipped };
+    var titleEl=all(am,'Title')[0];
+    R.solution={ name:app.getAttribute('Name')||'', title:titleEl?titleEl.textContent.trim():'', id:app.getAttribute('ProductID')||'',
+      version:app.getAttribute('Version')||'', clientSide:/^true$/i.test(app.getAttribute('IsClientSideSolution')||''),
+      skipFeatureDeployment:/^true$/i.test(app.getAttribute('SkipFeatureDeployment')||''), domainIsolated:/^true$/i.test(app.getAttribute('IsDomainIsolated')||'') };
+    var dev={}; var devEl=all(am,'DeveloperProperties')[0];
+    if(devEl){ try{ dev=JSON.parse(devEl.textContent)||{}; }catch(e){} }
+    R.developer={ name:dev.name||'', websiteUrl:dev.websiteUrl||'', privacyUrl:dev.privacyUrl||'', termsOfUseUrl:dev.termsOfUseUrl||'', mpnId:dev.mpnId||'' };
+    R.permissions=all(am,'WebApiPermissionRequest').map(function(x){ var res=x.getAttribute('ResourceId')||'', sc=x.getAttribute('Scope')||''; var r=rateScope(res,sc); return {resource:res,scope:sc,level:r.lvl,why:r.why}; });
+
+    // component manifests + provisioning in every element/feature XML
+    R.components=[]; R.instances=[]; R.provisions={lists:0,fields:0,contentTypes:0,customActions:0};
+    var referenced={}, externalBases={}, externalScripts=[], spfx='';
+    var xmls=pkg.entries.filter(function(e){ return /\.xml$/i.test(e.name) && !/^_rels\//i.test(e.name) && e.name.toLowerCase()!=='appmanifest.xml' && e.name!=='[Content_Types].xml'; });
+    for(var i=0;i<xmls.length;i++){
+      var t=await text(xmls[i]); if(!t||t.indexOf('<')<0) continue; var d=xml(t); if(!d) continue;
+      all(d,'ClientSideComponent').forEach(function(c){
+        var m={}; try{ m=JSON.parse(c.getAttribute('ComponentManifest')||'{}'); }catch(e){}
+        var pe=(m.preconfiguredEntries&&m.preconfiguredEntries[0])||{}, tt=pe.title&&(pe.title['default']||pe.title[Object.keys(pe.title)[0]]);
+        var lc=m.loaderConfig||{}, bases=lc.internalModuleBaseUrls||[], sr=lc.scriptResources||{};
+        bases.forEach(function(b){ if(String(b).toLowerCase()!==ASSET_LIB) externalBases[b]=1; });
+        Object.keys(sr).forEach(function(k){
+          var v=sr[k]||{};
+          if(k==='@microsoft/sp-core-library'&&v.version) spfx=v.version;
+          var paths=[]; if(typeof v.path==='string') paths.push(v.path); if(v.paths&&typeof v.paths==='object') Object.keys(v.paths).forEach(function(l){ paths.push(v.paths[l]); });
+          if(typeof v.defaultPath==='string') paths.push(v.defaultPath);
+          paths.forEach(function(p){ if(/^https?:\/\//i.test(p)) externalScripts.push(p); else referenced[p.split('/').pop().toLowerCase()]=1; });
+        });
+        R.components.push({ name:tt||c.getAttribute('Name')||m.alias||'(unnamed)', id:m.id||c.getAttribute('Id')||'', type:m.componentType||c.getAttribute('Type')||'',
+          extensionType:m.extensionType||'', version:m.version||'', hosts:m.supportedHosts||[] });
+      });
+      all(d,'ClientSideComponentInstance').forEach(function(x){ R.instances.push({ title:x.getAttribute('Title')||'', location:x.getAttribute('Location')||'', componentId:x.getAttribute('ComponentId')||'' }); });
+      R.provisions.lists+=all(d,'ListInstance').length; R.provisions.fields+=all(d,'Field').length;
+      R.provisions.contentTypes+=all(d,'ContentType').length; R.provisions.customActions+=all(d,'CustomAction').length;
+    }
+    if(!spfx && /-(\d+\.\d+\.\d+)$/.test(R.developer.mpnId)) spfx=R.developer.mpnId.match(/-(\d+\.\d+\.\d+)$/)[1];
+    R.solution.spfx=spfx;
+
+    // code scan
+    var assets=pkg.entries.filter(function(e){ return /^clientsideassets\//i.test(e.name); });
+    var jsFiles=assets.filter(function(e){ return /\.js$/i.test(e.name); });
+    var maps=pkg.entries.filter(function(e){ return /\.map$/i.test(e.name); });
+    var scanFiles=pkg.entries.filter(function(e){ return /\.(js|json|xml|txt|html?|css)$/i.test(e.name) && !/^_rels\//i.test(e.name) && e.name!=='[Content_Types].xml'; });
+    var hosts={}, secretHits=[], loadScripts=[], evalHits=[], fnHits=[], writeHits=[], httpHits=[];
+    for(var j=0;j<scanFiles.length;j++){
+      var f=scanFiles[j], s=await text(f); if(s==null) continue;
+      var taken=[];
+      SECRETS.forEach(function(p){
+        p.re.lastIndex=0; var m, k=0;
+        while((m=p.re.exec(s)) && k<5){ var val=m[p.g]||m[0], at=m.index+m[0].indexOf(val); taken.push([at,at+val.length]); secretHits.push({p:p,file:f.name,at:where(s,at),snip:snippet(s,at,val.length,p.id!=='pkey')}); k++; }
+      });
+      GENERIC.lastIndex=0; var g, gk=0;
+      while((g=GENERIC.exec(s)) && gk<5){
+        var v=g[2], at2=g.index+g[0].lastIndexOf(v);
+        if(NOT_SECRET.test(v)||entropy(v)<3.2||!/\d/.test(v)||taken.some(function(r){ return at2<r[1]&&at2+v.length>r[0]; })) continue;
+        secretHits.push({p:{id:'generic',lvl:'Medium',title:'Possible hard-coded secret',detail:'A value assigned to a field named like a secret ('+g[1]+') looks random enough to be real.',fix:'Confirm with the developer whether it is a real credential. Real credentials must not ship in client-side code.'},file:f.name,at:where(s,at2),snip:snippet(s,at2,v.length,true)}); gk++;
+      }
+      if(/\.(js|json|html?|css)$/i.test(f.name)){
+        var ur=/(https?):\/\/([a-z0-9][a-z0-9.\-]*\.[a-z]{2,}|localhost)(?::\d+)?/gi, u;
+        while((u=ur.exec(s))){ var h=u[2].toLowerCase(); if(!hosts[h]) hosts[h]={host:h,count:0,files:{},http:false,group:hostGroup(h)}; hosts[h].count++; hosts[h].files[f.name.split('/').pop()]=1; if(u[1].toLowerCase()==='http'&&hosts[h].group==='third') { if(!hosts[h].http) httpHits.push({host:h,file:f.name}); hosts[h].http=true; } }
+        var lr=/loadScript\s*\(\s*["'`](https?:\/\/[^"'`]+)["'`]/g, l;
+        while((l=lr.exec(s))) loadScripts.push({url:l[1],file:f.name,at:where(s,l.index)});
+        var er=/(^|[^.\w$])eval\s*\(/g, ev; while((ev=er.exec(s))) evalHits.push(f.name);
+        var nf=/\bnew\s+Function\s*\(/g, fn; while((fn=nf.exec(s))){ if(!/return\s+this/.test(s.substr(fn.index,60))) fnHits.push(f.name); }
+        if(/document\.write(ln)?\s*\(/.test(s)) writeHits.push(f.name);
+      }
+    }
+    R.domains=Object.keys(hosts).map(function(h){ var x=hosts[h]; return {host:h,group:x.group,count:x.count,files:Object.keys(x.files),http:x.http}; })
+      .sort(function(a,b){ var o={third:0,ms:1,docs:2}; return o[a.group]-o[b.group]||b.count-a.count; });
+
+    // bundle
+    var jsTotal=0; jsFiles.forEach(function(e){ jsTotal+=e.size; });
+    var stems={}; Object.keys(referenced).forEach(function(n){ stems[n.replace(/(_[0-9a-f]{8,40})?\.js$/i,'')]=1; });
+    var stale=jsFiles.filter(function(e){ var b=e.name.split('/').pop().toLowerCase(); return !referenced[b] && stems[b.replace(/(_[0-9a-f]{8,40})?\.js$/i,'')]; });
+    var staleSize=0; stale.forEach(function(e){ staleSize+=e.size; });
+    R.bundle={ jsTotal:jsTotal, jsCount:jsFiles.length, packaged:assets.length>0,
+      top:jsFiles.slice().sort(function(a,b){ return b.size-a.size; }).slice(0,5).map(function(e){ return {name:e.name.split('/').pop(),size:e.size,referenced:!!referenced[e.name.split('/').pop().toLowerCase()]}; }),
+      stale:stale.map(function(e){ return {name:e.name.split('/').pop(),size:e.size}; }), staleSize:staleSize, maps:maps.length };
+
+    // ---- findings ----
+    function add(lvl,title,detail,evidence,fix){ R.findings.push({level:lvl,title:title,detail:detail,evidence:evidence,fix:fix}); }
+    function pass(t){ R.passed.push(t); }
+
+    if(!R.solution.clientSide) add('Medium','Not marked as a client-side solution','IsClientSideSolution is not true in AppManifest.xml, so this may be a SharePoint add-in rather than an SPFx package. The rest of this report assumes SPFx.','AppManifest.xml → <App IsClientSideSolution="'+(app.getAttribute('IsClientSideSolution')||'')+'">','Check where the package came from.');
+
+    ['High','Medium'].forEach(function(lv){
+      var ps=R.permissions.filter(function(p){ return p.level===lv; }); if(!ps.length) return;
+      add(lv, lv==='High'?'Requests high-impact API permissions':'Requests API permissions that read broadly',
+        ps.map(function(p){ return p.scope+': '+p.why; }).join(' '),
+        ps.map(function(p){ return 'AppManifest.xml → <WebApiPermissionRequest ResourceId="'+p.resource+'" Scope="'+p.scope+'">'; }).join('\n'),
+        lv==='High'?'Ask the developer why each scope is needed and whether a narrower one (for example Sites.Selected, or a Read scope) would do. Approval applies to every SPFx solution in the tenant.':'Confirm the scope matches what the web part does. Approval applies to every SPFx solution in the tenant.');
+    });
+    if(!R.permissions.length) pass('No API permission requests');
+    else if(!R.permissions.some(function(p){ return p.level!=='Low'; })) pass('Only low-impact API permissions requested');
+
+    var groupedSecrets={};
+    secretHits.forEach(function(h){ (groupedSecrets[h.p.id]=groupedSecrets[h.p.id]||{p:h.p,hits:[]}).hits.push(h); });
+    Object.keys(groupedSecrets).forEach(function(k){ var gs=groupedSecrets[k];
+      add(gs.p.lvl,gs.p.title+(gs.hits.length>1?' ('+gs.hits.length+' places)':''),gs.p.detail,
+        gs.hits.slice(0,5).map(function(h){ return h.file+'  '+h.at+'\n  '+h.snip; }).join('\n'),gs.p.fix); });
+    if(!secretHits.length) pass('No secrets, keys or tokens found');
+
+    var ext=R.externalBases=Object.keys(externalBases);
+    if(ext.length) add('Medium','Code is loaded from outside the package','The components load their JavaScript from a CDN instead of the package. That code is not in this file, so it was not inspected and can change without a new version.',
+      ext.map(function(b){ return 'internalModuleBaseUrls: '+b; }).join('\n'),'Ask for a build with includeClientSideAssets set to true, or confirm who controls the CDN.');
+    else pass('All component code is inside the package');
+    if(externalScripts.length) add('Medium','Script resources point to external URLs','Some script resources in the component manifests are absolute URLs, so that code is fetched at runtime and is not in the package.',externalScripts.slice(0,8).join('\n'),'Confirm each URL with the developer.');
+    if(loadScripts.length) add('Medium','Loads scripts from the internet at runtime','The code calls loadScript with an absolute URL. That script is not in the package and can change at any time.',
+      loadScripts.slice(0,6).map(function(l){ return l.file+'  '+l.at+'\n  '+l.url; }).join('\n'),'Confirm the domain with the vendor and add it to your approved list, or ask for the script to be bundled.');
+    if(!externalScripts.length&&!loadScripts.length) pass('No runtime script loading from external URLs');
+
+    var third=R.domains.filter(function(d){ return d.group==='third'; });
+    if(third.length) add('Medium','References '+third.length+' third-party domain'+(third.length>1?'s':''),'These hosts appear in the shipped code. Some will be harmless library links, but any of them could receive data. Check the list under Domains in the code.',
+      third.slice(0,10).map(function(d){ return d.host+'  ('+d.count+'×, '+d.files[0]+(d.files.length>1?' +'+(d.files.length-1):'')+')'; }).join('\n')+(third.length>10?'\n…':''),'Ask the vendor what each domain is for.');
+    else pass('No third-party domains in the code');
+    if(httpHits.length) add('Low','Plain http:// URLs','Requests over http:// are not encrypted and are blocked as mixed content on SharePoint pages.',httpHits.slice(0,6).map(function(h){ return 'http://'+h.host+'  ('+h.file.split('/').pop()+')'; }).join('\n'),'Ask for https:// URLs.');
+    else pass('No plain http:// URLs');
+
+    if(R.instances.length) add('Medium','Switches on extensions across sites','The package includes extension instances that are added automatically when it is deployed tenant-wide, so they run on every site without a per-site install.',
+      R.instances.map(function(x){ return x.title+'  '+x.location+'  '+x.componentId; }).join('\n'),'Make sure running on every site is intended. You can remove entries later from the Tenant Wide Extensions list.');
+    else pass('Does not auto-activate extensions on every site');
+    if(R.solution.skipFeatureDeployment) add('Low','Can be made available to all sites at once','SkipFeatureDeployment is true, so when you upload it you can make its components available on every site without installing it per site. This is the normal setting for most SPFx packages.','AppManifest.xml → SkipFeatureDeployment="true"','Fine for tools meant for the whole intranet. For one team, upload it to a site collection app catalog.');
+
+    if(evalHits.length||fnHits.length) add('Low','Runs dynamically built code','eval() or new Function() appears in the code. Some libraries do this legitimately, but it is worth a question for packages from an unknown vendor.',
+      (evalHits.length?'eval(): '+uniq(evalHits).map(base).join(', '):'')+(evalHits.length&&fnHits.length?'\n':'')+(fnHits.length?'new Function(): '+uniq(fnHits).map(base).join(', '):''),'Ask which library uses it and why.');
+    else pass('No eval() or new Function()');
+    if(writeHits.length) add('Low','Uses document.write()','document.write() can overwrite the page and is a common way to inject markup.',uniq(writeHits).map(base).join(', '),'Ask which library uses it.');
+    else pass('No document.write()');
+
+    if(maps.length) add('Low','Source maps are shipped','.map files let anyone rebuild the original source code from the bundle.',maps.slice(0,5).map(function(e){ return e.name+'  '+kb(e.size); }).join('\n'),'Fine for open-source code. For private code, build with --ship and exclude source maps.');
+    else pass('No source maps shipped');
+    if(stale.length) add('Low','Old build files left in the package',stale.length+' JavaScript file'+(stale.length>1?'s are':' is')+' in the package but not referenced by any component manifest. They look like leftovers from earlier builds and add '+kb(staleSize)+'.',
+      stale.slice(0,6).map(function(e){ return e.name.split('/').pop()+'  '+kb(e.size); }).join('\n')+(stale.length>6?'\n… and '+(stale.length-6)+' more':''),'Clean the build output (gulp clean) before bundling for ship, then repackage.');
+    else if(jsFiles.length) pass('No old build files');
+    var big=R.bundle.top.filter(function(b){ return b.referenced&&b.size>1048576; });
+    if(big.length) add('Low','Large bundle','Large bundles slow down every page that hosts the component.',big.map(function(b){ return b.name+'  '+kb(b.size); }).join('\n'),'Optional. Ask whether large libraries can be split out or loaded on demand.');
+
+    var ids={}, dup=[]; R.components.forEach(function(c){ if(c.id){ if(ids[c.id]) dup.push(c.id); ids[c.id]=1; } });
+    if(dup.length) add('Medium','Duplicate component IDs','Two components share an ID, so one will replace the other in the app catalog.',uniq(dup).join('\n'),'Ask the developer to give each component a unique ID.');
+    else if(R.components.length) pass('Component IDs are unique');
+    if(!R.developer.name&&!R.developer.websiteUrl) add('Low','No publisher details','The package does not say who built it (developer name and website are empty).','AppManifest.xml → DeveloperProperties','Ask the vendor to fill in the developer section of package-solution.json.');
+    else pass('Publisher details present');
+    if(skipped.length) add('Low','Some files could not be read',skipped.length+' file(s) were skipped (too large, encrypted, or an unsupported compression), so they were not checked.',skipped.slice(0,6).join('\n'),'Inspect those files another way if they matter.');
+
+    var order={High:0,Medium:1,Low:2}; R.findings.sort(function(a,b){ return order[a.level]-order[b.level]; });
+    R.counts={High:0,Medium:0,Low:0}; R.findings.forEach(function(f){ R.counts[f.level]++; });
+    return R;
+  }
+  function uniq(a){ return a.filter(function(x,i){ return a.indexOf(x)===i; }); }
+  function base(n){ return n.split('/').pop(); }
+
+  // ---- render ----
+  var REPORT=null, FILTER='All';
+  var LV={High:'high',Medium:'med',Low:'low'};
+  function render(R){
+    REPORT=R; FILTER='All';
+    document.getElementById('start').style.display='none';
+    document.getElementById('report').style.display='block';
+    var v=R.counts.High?['v-high','Review before approving',R.counts.High+' high-impact finding'+(R.counts.High>1?'s':'')]:(R.counts.Medium?['v-med','Check the findings',R.counts.Medium+' finding'+(R.counts.Medium>1?'s':'')+' to confirm']:['v-ok','No significant issues found','Only low or no findings']);
+    var icon=R.counts.High||R.counts.Medium?'<path d="M12 3l9 16H3L12 3z"/><path d="M12 10v4"/><path d="M12 17h.01"/>':'<path d="M20 6 9 17l-5-5"/>';
+    var s=R.solution;
+    document.getElementById('sum').innerHTML=
+      '<div class="sum-top"><div style="min-width:0"><div class="sum-file">'+esc(R.file)+' &middot; '+esc(kb(R.fileSize))+(R.sample?' &middot; made-up sample':'')+'</div>'+
+      '<h2>'+esc(s.title||s.name||'(untitled solution)')+'</h2>'+
+      '<div class="sum-meta">Version '+esc(s.version||'?')+(s.spfx?' &middot; SPFx '+esc(s.spfx):'')+' &middot; Solution ID <span class="mono">'+esc(s.id||'?')+'</span></div>'+
+      (R.developer.name||R.developer.websiteUrl?'<div class="sum-meta">Publisher: '+esc(R.developer.name||'?')+(R.developer.websiteUrl?' &middot; '+esc(R.developer.websiteUrl):'')+'</div>':'')+'</div>'+
+      '<div class="verdict '+v[0]+'"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+icon+'</svg><div>'+v[1]+'<small>'+v[2]+'</small></div></div></div>'+
+      '<div class="tiles"><div class="tile"><div class="n c-high">'+R.counts.High+'</div><div class="l">High</div></div><div class="tile"><div class="n c-med">'+R.counts.Medium+'</div><div class="l">Medium</div></div><div class="tile"><div class="n c-low">'+R.counts.Low+'</div><div class="l">Low</div></div><div class="tile"><div class="n c-ok">'+R.passed.length+'</div><div class="l">Checks passed</div></div></div>';
+    renderFindings();
+
+    var ph;
+    if(!R.permissions.length) ph='<div class="empty">This package does not request any API permissions.</div>';
+    else ph='<div class="tbl"><table><thead><tr><th>Resource</th><th>Scope</th><th>Reach</th></tr></thead><tbody>'+R.permissions.map(function(p){ return '<tr><td>'+esc(p.resource)+'</td><td class="mono">'+esc(p.scope)+'</td><td><span class="chip '+LV[p.level]+'">'+esc(p.level)+'</span><div style="font-size:12.5px;color:var(--muted);margin-top:4px;">'+esc(p.why)+'</div></td></tr>'; }).join('')+'</tbody></table></div>'+
+      '<div class="note">SPFx permissions are delegated and approved once for the whole tenant. Approving them grants them to the shared SharePoint Online Client Extensibility principal, so every SPFx solution in the tenant can use them, not only this package.</div>';
+    document.getElementById('perms').innerHTML=ph;
+
+    var GL={third:['Third-party','med'],ms:['Microsoft','ok'],docs:['Docs / namespace','low']};
+    document.getElementById('domains').innerHTML=!R.domains.length?'<div class="empty">No URLs found in the code.</div>':
+      '<div class="tbl"><table><thead><tr><th>Domain</th><th>Group</th><th>Times</th><th>Found in</th></tr></thead><tbody>'+R.domains.slice(0,60).map(function(d){ return '<tr><td class="mono">'+esc(d.host)+(d.http?' <span class="chip low">http</span>':'')+'</td><td><span class="chip '+GL[d.group][1]+'">'+GL[d.group][0]+'</span></td><td>'+d.count+'</td><td class="mono">'+esc(d.files[0])+(d.files.length>1?' +'+(d.files.length-1):'')+'</td></tr>'; }).join('')+'</tbody></table></div>'+
+      (R.domains.length>60?'<div class="empty">Showing 60 of '+R.domains.length+'. The JSON export has them all.</div>':'')+
+      '<div class="note">Found as text in the code, not observed as network calls. "Docs / namespace" hosts are usually licence headers, error-message links or XML namespaces.</div>';
+
+    var pv=R.provisions, provs=[pv.lists?pv.lists+' list(s)':'',pv.fields?pv.fields+' field(s)':'',pv.contentTypes?pv.contentTypes+' content type(s)':'',pv.customActions?pv.customActions+' custom action(s)':''].filter(Boolean).join(', ');
+    document.getElementById('deploy').innerHTML='<dl class="kv">'+
+      '<dt>Available to all sites</dt><dd'+(s.skipFeatureDeployment?' class="c-med"':'')+'>'+(s.skipFeatureDeployment?'Allowed':'No')+'</dd>'+
+      '<dt>Auto-activated extensions</dt><dd'+(R.instances.length?' class="c-med"':'')+'>'+R.instances.length+'</dd>'+
+      '<dt>Domain isolated</dt><dd>'+(s.domainIsolated?'Yes':'No')+'</dd>'+
+      '<dt>Code in package</dt><dd'+(R.externalBases.length?' class="c-med"':'')+'>'+(R.bundle.packaged&&!R.externalBases.length?'Yes':(R.bundle.packaged?'Partly':'No (CDN)'))+'</dd>'+
+      '<dt>Teams / Viva hosts</dt><dd>'+(R.components.some(function(c){ return c.hosts.some(function(h){ return /^Teams/.test(h); }); })?'Yes':'No')+'</dd>'+
+      '<dt>Provisions on install</dt><dd>'+(provs?esc(provs):'Nothing')+'</dd></dl>';
+
+    document.getElementById('compH').textContent='Components ('+R.components.length+')';
+    document.getElementById('comps').innerHTML=!R.components.length?'<div class="empty">No components found.</div>':R.components.map(function(c){
+      var lbl=COMP_LABEL[c.extensionType]||COMP_LABEL[c.type]||c.type||'Component';
+      return '<div class="comp"><b>'+esc(c.name)+'</b><span>'+esc(lbl)+(c.version?' &middot; v'+esc(c.version):'')+'</span><span class="mono">'+esc(c.id)+'</span>'+(c.hosts.length?'<span>'+esc(c.hosts.join(', '))+'</span>':'')+'</div>'; }).join('');
+
+    var b=R.bundle, mx=b.top.length?b.top[0].size:1;
+    document.getElementById('bundle').innerHTML=!b.packaged?'<div class="empty">No ClientSideAssets folder. The code is hosted outside the package, so it was not measured.</div>':
+      '<dl class="kv"><dt>JavaScript files</dt><dd>'+b.jsCount+'</dd><dt>Total size</dt><dd>'+kb(b.jsTotal)+'</dd>'+(b.stale.length?'<dt>Old build files</dt><dd class="c-med">'+b.stale.length+' ('+kb(b.staleSize)+')</dd>':'')+(b.maps?'<dt>Source maps</dt><dd>'+b.maps+'</dd>':'')+'</dl>'+
+      b.top.map(function(t){ return '<div class="brow"><div class="bn"><span title="'+esc(t.name)+'">'+esc(t.name)+'</span><span>'+kb(t.size)+'</span></div><div class="bar"><i style="width:'+Math.max(2,Math.round(t.size/mx*100))+'%"></i></div></div>'; }).join('');
+
+    document.getElementById('passH').textContent='Checks passed ('+R.passed.length+')';
+    document.getElementById('passed').innerHTML=R.passed.length?'<ul class="passed">'+R.passed.map(function(p){ return '<li>'+esc(p)+'</li>'; }).join('')+'</ul>':'<div class="empty">None.</div>';
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+  function renderFindings(){
+    var R=REPORT, n={All:R.findings.length,High:R.counts.High,Medium:R.counts.Medium,Low:R.counts.Low};
+    document.getElementById('filters').innerHTML=['All','High','Medium','Low'].map(function(l){ return '<button type="button" class="fpill" data-f="'+l+'" aria-pressed="'+(l===FILTER)+'">'+l+' ('+n[l]+')</button>'; }).join('');
+    var list=R.findings.filter(function(f){ return FILTER==='All'||f.level===FILTER; });
+    document.getElementById('findings').innerHTML=!list.length?'<div class="empty">'+(R.findings.length?'No findings at this severity.':'No findings. See the checks that passed.')+'</div>':list.map(function(f){
+      return '<article class="find"><div class="fh"><span class="chip '+LV[f.level]+'">'+esc(f.level)+'</span><h4>'+esc(f.title)+'</h4></div><p>'+esc(f.detail)+'</p>'+(f.evidence?'<div class="ev">'+esc(f.evidence)+'</div>':'')+'<div class="todo"><b>What to do:</b> '+esc(f.fix)+'</div></article>'; }).join('');
+  }
+  document.getElementById('filters').addEventListener('click',function(e){ var b=e.target.closest('[data-f]'); if(!b) return; FILTER=b.getAttribute('data-f'); renderFindings(); });
+
+  // ---- exports ----
+  function download(name,type,body){ var a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([body],{type:type})); a.download=name; document.body.appendChild(a); a.click(); setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); },500); }
+  function stem(){ return (REPORT.file||'package').replace(/\.sppkg$/i,'').replace(/[^\w.\-]+/g,'_'); }
+  document.getElementById('btnJson').addEventListener('click',function(){ if(REPORT) download(stem()+'-inspection.json','application/json',JSON.stringify(Object.assign({tool:'SPFx Package Inspector',inspectedAt:new Date().toISOString()},REPORT),null,2)); });
+  document.getElementById('btnMd').addEventListener('click',function(){
+    if(!REPORT) return; var R=REPORT, s=R.solution, L=[];
+    L.push('# SPFx package inspection: '+(s.title||s.name),'','| | |','|---|---|','| File | '+R.file+' ('+kb(R.fileSize)+') |','| Version | '+s.version+' |','| SPFx | '+(s.spfx||'unknown')+' |','| Solution ID | '+s.id+' |','| Publisher | '+(R.developer.name||'not stated')+' |','| Inspected | '+new Date().toISOString().slice(0,10)+' |','');
+    L.push('**Result:** '+R.counts.High+' high, '+R.counts.Medium+' medium, '+R.counts.Low+' low, '+R.passed.length+' checks passed.','','## Findings','');
+    if(!R.findings.length) L.push('None.','');
+    R.findings.forEach(function(f){ L.push('### ['+f.level+'] '+f.title,'',f.detail,'','```',f.evidence,'```','','**What to do:** '+f.fix,''); });
+    L.push('## API permission requests','');
+    if(!R.permissions.length) L.push('None.',''); else { L.push('| Resource | Scope | Reach |','|---|---|---|'); R.permissions.forEach(function(p){ L.push('| '+p.resource+' | `'+p.scope+'` | '+p.level+' |'); }); L.push(''); }
+    L.push('## Components','','| Name | Type | Version | ID |','|---|---|---|---|');
+    R.components.forEach(function(c){ L.push('| '+c.name+' | '+(COMP_LABEL[c.extensionType]||COMP_LABEL[c.type]||c.type)+' | '+c.version+' | `'+c.id+'` |'); });
+    L.push('','## Third-party domains in the code','');
+    var t=R.domains.filter(function(d){ return d.group==='third'; }); if(!t.length) L.push('None.'); else t.forEach(function(d){ L.push('- `'+d.host+'` ('+d.count+'×)'); });
+    L.push('','## Checks passed',''); R.passed.forEach(function(p){ L.push('- '+p); });
+    L.push('','---','Generated by SPFx Package Inspector (https://tools.fivenumber.com/spfx-package-inspector/). Static analysis only: a clean report does not prove a package is safe.');
+    download(stem()+'-inspection.md','text/markdown',L.join('\n'));
+  });
+
+  // ---- input ----
+  var statusEl=document.getElementById('status');
+  function setStatus(msg,warn){ if(!msg){ statusEl.style.display='none'; return; } statusEl.className='status'+(warn?' warn':''); statusEl.style.display='flex';
+    statusEl.innerHTML='<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">'+(warn?'<path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/>':'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>')+'</svg><span>'+esc(msg)+'</span>'; }
+  async function inspectFile(file){
+    if(!file) return;
+    if(!/\.sppkg$/i.test(file.name)){ setStatus('That is not an .sppkg file. Choose the package from sharepoint/solution in an SPFx project, or download it from the app catalog.',true); return; }
+    if(file.size>MAX_FILE){ setStatus('That package is larger than 100 MB, which this tool does not read.',true); return; }
+    if(typeof DecompressionStream==='undefined'){ setStatus('Your browser cannot unzip files natively. Please use a current version of Edge, Chrome, Firefox or Safari.',true); return; }
+    setStatus('Reading '+file.name+'…');
+    try{
+      var z=openZip(await file.arrayBuffer());
+      var R=await analyze({fileName:file.name,fileSize:file.size,entries:z.entries,readText:z.readText});
+      setStatus(''); render(R);
+    }catch(err){ setStatus(err&&err.message?err.message:'The package could not be read.',true); }
+  }
+  var fileInput=document.getElementById('file');
+  fileInput.addEventListener('change',function(){ inspectFile(fileInput.files[0]); fileInput.value=''; });
+  var dz=document.getElementById('dz');
+  ['dragenter','dragover'].forEach(function(t){ dz.addEventListener(t,function(e){ e.preventDefault(); dz.classList.add('over'); }); });
+  ['dragleave','drop'].forEach(function(t){ dz.addEventListener(t,function(e){ e.preventDefault(); dz.classList.remove('over'); }); });
+  dz.addEventListener('drop',function(e){ inspectFile(e.dataTransfer.files[0]); });
+  // a file dropped anywhere else should not navigate away from the page
+  window.addEventListener('dragover',function(e){ e.preventDefault(); });
+  window.addEventListener('drop',function(e){ e.preventDefault(); if(document.getElementById('start').style.display!=='none'&&e.dataTransfer.files[0]) inspectFile(e.dataTransfer.files[0]); });
+  document.getElementById('btnAgain').addEventListener('click',function(){ REPORT=null; document.getElementById('report').style.display='none'; document.getElementById('start').style.display=''; setStatus(''); window.scrollTo({top:0}); });
+
+  // ---- made-up sample package, built in memory and run through the same analyzer ----
+  document.getElementById('btnSample').addEventListener('click',function(){
+    function attr(o){ return esc(JSON.stringify(o)); }
+    var wp={id:'4f2c8d10-6a1b-4c3e-9f2d-7b5e1a3c9e07',alias:'TeamNewsWebPart',componentType:'WebPart',version:'1.4.0',manifestVersion:2,supportedHosts:['SharePointWebPart','TeamsTab'],
+      preconfiguredEntries:[{title:{'default':'Team News'}}],loaderConfig:{internalModuleBaseUrls:['HTTPS://SPCLIENTSIDEASSETLIBRARY/'],entryModuleId:'team-news-web-part',
+      scriptResources:{'team-news-web-part':{type:'path',path:'team-news-web-part_3f9a1c2b4d5e6f708192.js'},'@microsoft/sp-core-library':{type:'component',version:'1.20.0'}}}};
+    var ext={id:'a91b33e5-2f4c-4d1a-8b6e-0c7d9e2f1c48',alias:'SiteBannerApplicationCustomizer',componentType:'Extension',extensionType:'ApplicationCustomizer',version:'1.4.0',manifestVersion:2,
+      loaderConfig:{internalModuleBaseUrls:['HTTPS://SPCLIENTSIDEASSETLIBRARY/'],entryModuleId:'site-banner-application-customizer',scriptResources:{'site-banner-application-customizer':{type:'path',path:'site-banner-application-customizer_77c1aa02bb03cc04dd05.js'}}}};
+    var secret=['Abc8','Q~','aB3dE5fG7hJ9kL1mN3pQ5rS7tU9vW1xY3z'].join('');
+    var files={
+      'AppManifest.xml':'<?xml version="1.0" encoding="utf-8"?><App xmlns="http://schemas.microsoft.com/sharepoint/2012/app/manifest" Name="acme-team-news-client-side-solution" ProductID="7c1e9a42-3d5b-4f6e-8a1c-2b4d6e8fb31f" Version="1.4.0.0" SharePointMinVersion="16.0.0.0" IsClientSideSolution="true" SkipFeatureDeployment="true" IsDomainIsolated="false"><Properties><Title>Acme Team News</Title><DeveloperProperties>'+esc(JSON.stringify({name:'Acme Widgets (sample)',websiteUrl:'https://acme.example.com',mpnId:'Undefined-1.20.0'}))+'</DeveloperProperties></Properties><WebApiPermissionRequests><WebApiPermissionRequest ResourceId="Microsoft Graph" Scope="Sites.ReadWrite.All"></WebApiPermissionRequest><WebApiPermissionRequest ResourceId="Microsoft Graph" Scope="User.ReadBasic.All"></WebApiPermissionRequest></WebApiPermissionRequests></App>',
+      'feature_1/WebPart_1.xml':'<Elements xmlns="http://schemas.microsoft.com/sharepoint/"><ClientSideComponent Name="Team News" Id="'+wp.id+'" Type="WebPart" ComponentManifest="'+attr(wp)+'"></ClientSideComponent></Elements>',
+      'feature_1/Extension_1.xml':'<Elements xmlns="http://schemas.microsoft.com/sharepoint/"><ClientSideComponent Name="Site Banner" Id="'+ext.id+'" Type="Extension" ComponentManifest="'+attr(ext)+'"></ClientSideComponent></Elements>',
+      'feature_1/ClientSideInstance.xml':'<Elements xmlns="http://schemas.microsoft.com/sharepoint/"><ClientSideComponentInstance Title="Site Banner" Location="ClientSideExtension.ApplicationCustomizer" ComponentId="'+ext.id+'"></ClientSideComponentInstance></Elements>',
+      'ClientSideAssets/team-news-web-part_3f9a1c2b4d5e6f708192.js':'define([],function(){var cfg={clientSecret:"'+secret+'",tenant:"acme"};SPComponentLoader.loadScript("https://cdn.example-analytics.net/tag.js");fetch("https://api.example-weather.com/v1/today");fetch("https://graph.microsoft.com/v1.0/me");/* https://reactjs.org/docs/error-decoder.html */});',
+      'ClientSideAssets/team-news-web-part_0aa1bb2cc3dd4ee5ff60.js':'define([],function(){/* older build */});',
+      'ClientSideAssets/site-banner-application-customizer_77c1aa02bb03cc04dd05.js':'define([],function(){var u="http://status.example-banner.net/feed";});'
+    };
+    var sizes={'ClientSideAssets/team-news-web-part_3f9a1c2b4d5e6f708192.js':1373208,'ClientSideAssets/team-news-web-part_0aa1bb2cc3dd4ee5ff60.js':1301776,'ClientSideAssets/site-banner-application-customizer_77c1aa02bb03cc04dd05.js':429900};
+    var entries=Object.keys(files).map(function(n){ return {name:n,size:sizes[n]||files[n].length}; });
+    setStatus('');
+    analyze({fileName:'acme-team-news.sppkg',fileSize:2203000,sample:true,entries:entries,readText:function(e){ return Promise.resolve(files[e.name]); }})
+      .then(render).catch(function(err){ setStatus(err.message,true); });
+  });
+
+  // ---- shared feedback dialog (portable across tools) ----
+  (function(){
+    var dlg=document.getElementById('fbDialog'), openBtn=document.getElementById('fbOpen'), closeBtn=document.getElementById('fbClose');
+    if(!dlg||!openBtn) return;
+    var TOOL=document.body.getAttribute('data-tool')||'Five Number tools';
+    document.getElementById('fbSubject').value='New '+TOOL+' feedback';
+    document.getElementById('fbFrom').value=TOOL;
+    document.getElementById('fbTool').value=TOOL;
+    var form=document.getElementById('fbForm'), statusEl=document.getElementById('fbStatus'), sbtn=document.getElementById('fbSubmit'), thanks=document.getElementById('fbThanks');
+    openBtn.addEventListener('click',function(){ document.getElementById('fbPage').value=location.href; if(thanks.style.display==='block'){ thanks.style.display='none'; form.style.display=''; form.reset(); statusEl.style.display='none'; sbtn.disabled=false; sbtn.innerHTML='Send feedback'; } if(dlg.showModal){ dlg.showModal(); } else { dlg.setAttribute('open',''); } var n=document.getElementById('fbName'); if(n) n.focus(); });
+    if(closeBtn) closeBtn.addEventListener('click',function(){ dlg.close(); });
+    dlg.addEventListener('click',function(e){ var r=dlg.getBoundingClientRect(); if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom){ dlg.close(); } });
+    function setStatus(m,ok){ statusEl.style.display=''; statusEl.textContent=m; statusEl.style.color=ok?'var(--good)':'#e5484d'; }
+    form.addEventListener('submit',function(e){
+      e.preventDefault();
+      var bot=form.querySelector('[name="botcheck"]'); if(bot&&bot.checked) return;
+      var name=document.getElementById('fbName').value.trim(), email=document.getElementById('fbEmail').value.trim(), msg=document.getElementById('fbMsg').value.trim();
+      if(!name||!email||!msg){ setStatus('Please add your name, email and a short message.',false); return; }
+      if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ setStatus('Please enter a valid email address.',false); return; }
+      var oldHtml=sbtn.innerHTML; sbtn.disabled=true; sbtn.innerHTML='Sending…'; statusEl.style.display='none';
+      fetch('https://api.web3forms.com/submit',{ method:'POST', headers:{'Content-Type':'application/json','Accept':'application/json'}, body:JSON.stringify(Object.fromEntries(new FormData(form).entries())) })
+        .then(function(r){ return r.json(); }).then(function(j){
+          if(j&&j.success){ form.style.display='none'; thanks.style.display='block'; }
+          else { setStatus('Sorry, something went wrong. Please try again.',false); sbtn.disabled=false; sbtn.innerHTML=oldHtml; }
+        }).catch(function(){ setStatus('Network error. Please try again.',false); sbtn.disabled=false; sbtn.innerHTML=oldHtml; });
+    });
+  })();
+  // ---- disclaimer dialog ----
+  (function(){
+    var d=document.getElementById("discDialog"), o=document.getElementById("discOpen"), c=document.getElementById("discClose");
+    if(!d||!o) return;
+    o.addEventListener("click",function(e){ e.preventDefault(); if(d.showModal){ d.showModal(); } else { d.setAttribute("open",""); } });
+    if(c) c.addEventListener("click",function(){ d.close(); });
+    d.addEventListener("click",function(e){ var r=d.getBoundingClientRect(); if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom){ d.close(); } });
+  })();
+</script>
+</body>
+</html>
