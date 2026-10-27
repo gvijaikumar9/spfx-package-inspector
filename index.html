@@ -21,7 +21,7 @@
 
   :root{
     --ground:#f7fafc; --surface:#ffffff; --surface-2:#edf2f7; --code-bg:#1a202c;
-    --border:#e2e8f0; --border-strong:#cbd5e0; --ink:#1a202c; --muted:#4a5568; --faint:#718096;
+    --border:#e2e8f0; --border-strong:#cbd5e0; --ink:#1a202c; --muted:#4a5568; --faint:#5f6b7c; --btn:#2f6fed;
     --blue:#2f6fed; --blue-ink:#1e56c6; --blue-soft:#eaf1fe; --blue-line:#c8dbfb;
     --amber:#b8730d; --good:#1f9d57; --red:#d3455b;
     --font:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;
@@ -31,7 +31,7 @@
   }
   :root[data-theme="dark"]{
     --ground:#1e1e1e; --surface:#252526; --surface-2:#2d2d30; --code-bg:#1a1a1a;
-    --border:#3c3c3c; --border-strong:#4a4a4a; --ink:#d4d4d4; --muted:#a0a0a0; --faint:#6e6e6e;
+    --border:#3c3c3c; --border-strong:#4a4a4a; --ink:#d4d4d4; --muted:#a0a0a0; --faint:#959595; --btn:#1f5fc4;
     --blue:#3794ff; --blue-ink:#5aa9ff; --blue-soft:#12283f; --blue-line:#264a6e;
     --amber:#d7ba7d; --good:#4ec9b0; --red:#f14c4c;
     --shadow-sm:0 1px 2px rgba(0,0,0,.35); --shadow:0 1px 2px rgba(0,0,0,.3), 0 14px 30px -20px rgba(0,0,0,.7);
@@ -39,7 +39,7 @@
   }
   @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
     --ground:#1e1e1e; --surface:#252526; --surface-2:#2d2d30; --code-bg:#1a1a1a;
-    --border:#3c3c3c; --border-strong:#4a4a4a; --ink:#d4d4d4; --muted:#a0a0a0; --faint:#6e6e6e;
+    --border:#3c3c3c; --border-strong:#4a4a4a; --ink:#d4d4d4; --muted:#a0a0a0; --faint:#959595; --btn:#1f5fc4;
     --blue:#3794ff; --blue-ink:#5aa9ff; --blue-soft:#12283f; --blue-line:#264a6e;
     --amber:#d7ba7d; --good:#4ec9b0; --red:#f14c4c;
     --shadow-sm:0 1px 2px rgba(0,0,0,.35); --shadow:0 1px 2px rgba(0,0,0,.3), 0 14px 30px -20px rgba(0,0,0,.7);
@@ -88,14 +88,14 @@
   .crumb a{color:var(--muted);} .crumb a:hover{color:var(--blue);}
   h1{font-size:29px;line-height:1.15;font-weight:800;letter-spacing:-.02em;margin:0 0 10px;}
   .lede{font-size:16px;color:var(--muted);margin:0 0 4px;}
-  .privacy{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;color:var(--good);margin-top:14px;}
+  .privacy{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;color:color-mix(in srgb,var(--good) 72%,var(--ink));margin-top:14px;}
   .privacy svg{width:14px;height:14px;}
 
   .panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow);padding:20px;margin-top:22px;}
   .btn{border:1px solid var(--border-strong);background:var(--surface);color:var(--ink);border-radius:9px;padding:8px 13px;font-size:13.5px;font-weight:600;display:inline-flex;align-items:center;gap:7px;min-height:40px;}
   .btn:hover{background:var(--surface-2);}
-  .btn.primary{background:var(--blue);border-color:var(--blue);color:#fff;}
-  .btn.primary:hover{filter:brightness(1.05);background:var(--blue);}
+  .btn.primary{background:var(--btn);border-color:var(--btn);color:#fff;}
+  .btn.primary:hover{filter:brightness(1.08);background:var(--btn);}
   .mono{font-family:var(--mono);}
 
   /* drop zone */
@@ -111,7 +111,7 @@
 
   .status{display:none;align-items:flex-start;gap:11px;background:var(--blue-soft);border:1px solid var(--blue-line);border-radius:11px;padding:13px 15px;margin-top:18px;color:var(--blue-ink);font-size:14.5px;font-weight:600;}
   .status svg{width:19px;height:19px;flex:none;margin-top:1px;}
-  .status.warn{background:color-mix(in srgb,var(--amber) 12%,transparent);border-color:color-mix(in srgb,var(--amber) 45%,transparent);color:var(--amber);}
+  .status.warn{background:color-mix(in srgb,var(--amber) 12%,transparent);border-color:color-mix(in srgb,var(--amber) 45%,transparent);color:color-mix(in srgb,var(--amber) 70%,var(--ink));}
 
   .checks{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px;margin-top:14px;}
   .card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 18px;}
@@ -131,8 +131,8 @@
   .verdict small{display:block;font-weight:500;font-size:12.5px;}
   .verdict svg{width:22px;height:22px;flex:none;}
   .v-high{color:color-mix(in srgb,var(--red) 85%,var(--ink));background:color-mix(in srgb,var(--red) 9%,transparent);border-color:color-mix(in srgb,var(--red) 40%,transparent);}
-  .v-med{color:color-mix(in srgb,var(--amber) 85%,var(--ink));background:color-mix(in srgb,var(--amber) 10%,transparent);border-color:color-mix(in srgb,var(--amber) 40%,transparent);}
-  .v-ok{color:color-mix(in srgb,var(--good) 85%,var(--ink));background:color-mix(in srgb,var(--good) 10%,transparent);border-color:color-mix(in srgb,var(--good) 40%,transparent);}
+  .v-med{color:color-mix(in srgb,var(--amber) 65%,var(--ink));background:color-mix(in srgb,var(--amber) 10%,transparent);border-color:color-mix(in srgb,var(--amber) 40%,transparent);}
+  .v-ok{color:color-mix(in srgb,var(--good) 65%,var(--ink));background:color-mix(in srgb,var(--good) 10%,transparent);border-color:color-mix(in srgb,var(--good) 40%,transparent);}
   .tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;}
   .tile{border:1px solid var(--border);border-radius:10px;padding:10px 14px;}
   .tile .n{font-size:26px;font-weight:700;line-height:1.2;}
@@ -157,11 +157,11 @@
   .find p{margin:8px 0 0;font-size:14px;color:var(--muted);line-height:1.55;}
   .ev{margin-top:9px;background:var(--surface-2);border-radius:8px;padding:9px 11px;font-family:var(--mono);font-size:12.5px;overflow-x:auto;white-space:pre;color:var(--ink);}
   .todo{margin-top:9px;font-size:14px;} .todo b{font-weight:600;}
-  .chip{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:3px 9px;border-radius:100px;}
+  .chip{display:inline-block;white-space:nowrap;font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:3px 9px;border-radius:100px;}
   .chip.high{background:color-mix(in srgb,var(--red) 13%,transparent);color:color-mix(in srgb,var(--red) 85%,var(--ink));}
-  .chip.med{background:color-mix(in srgb,var(--amber) 15%,transparent);color:color-mix(in srgb,var(--amber) 85%,var(--ink));}
+  .chip.med{background:color-mix(in srgb,var(--amber) 15%,transparent);color:color-mix(in srgb,var(--amber) 65%,var(--ink));}
   .chip.low{background:var(--surface-2);color:var(--muted);}
-  .chip.ok{background:color-mix(in srgb,var(--good) 14%,transparent);color:color-mix(in srgb,var(--good) 85%,var(--ink));}
+  .chip.ok{background:color-mix(in srgb,var(--good) 14%,transparent);color:color-mix(in srgb,var(--good) 65%,var(--ink));}
   .chip.blue{background:var(--blue-soft);color:var(--blue-ink);}
   .empty{font-size:14px;color:var(--muted);padding:6px 0;}
 
@@ -177,7 +177,8 @@
   .comp{padding:9px 0;border-bottom:1px solid var(--border);} .comp:last-child{border-bottom:0;}
   .comp b{font-size:14px;display:block;word-break:break-word;} .comp span{display:block;font-size:12.5px;color:var(--muted);}
   .bar{height:7px;border-radius:4px;background:var(--surface-2);margin-top:4px;} .bar i{display:block;height:7px;border-radius:4px;background:var(--blue);}
-  .brow{margin-top:10px;font-size:12.8px;} .brow .bn{display:flex;justify-content:space-between;gap:8px;} .brow .bn span:first-child{font-family:var(--mono);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .brow{margin-top:10px;font-size:12.8px;} .brow .bn{display:flex;justify-content:space-between;gap:8px;} .brow .bn span:first-child{font-family:var(--mono);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;} .brow .bn span:last-child{white-space:nowrap;flex:none;}
+  .more{margin-top:10px;}
   ul.passed{margin:0;padding-left:18px;font-size:13.5px;line-height:1.75;color:var(--muted);}
 
   footer{border-top:1px solid var(--border);margin-top:50px;padding:24px 0 44px;}
@@ -186,8 +187,8 @@
   footer .fx .spacer{flex:1 1 auto;}
 
   /* shared feedback button + dialog (portable across tools) */
-  .fbbtn{gap:6px;background:var(--blue);border:1px solid var(--blue);color:#fff;padding:8px 14px;font-weight:600;border-radius:9px;}
-  .fbbtn:hover{background:var(--blue);color:#fff;filter:brightness(1.08);}
+  .fbbtn{gap:6px;background:var(--btn);border:1px solid var(--btn);color:#fff;padding:8px 14px;font-weight:600;border-radius:9px;}
+  .fbbtn:hover{background:var(--btn);color:#fff;filter:brightness(1.08);}
   @media (max-width:600px){ .fbbtn .fbtxt{display:none;} .fbbtn{padding:8px 10px;} }
   dialog.fbdlg{border:0;border-radius:16px;padding:0;max-width:520px;width:calc(100% - 32px);background:var(--surface);color:var(--ink);box-shadow:var(--shadow-lg);}
   dialog.fbdlg::backdrop{background:rgba(0,0,0,.5);}
@@ -207,13 +208,21 @@
   .fbcheck input{margin-top:3px;flex:none;}
   .fbcheck b{color:var(--ink);font-weight:600;display:block;}
   .fbrow{display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin-top:16px;}
-  .fbsubmit{background:var(--blue);border:1px solid var(--blue);color:#fff;border-radius:9px;padding:9px 16px;font-size:14px;font-weight:600;display:inline-flex;align-items:center;gap:7px;cursor:pointer;}
+  .fbsubmit{background:var(--btn);border:1px solid var(--btn);color:#fff;border-radius:9px;padding:9px 16px;font-size:14px;font-weight:600;display:inline-flex;align-items:center;gap:7px;cursor:pointer;}
   .fbsubmit:hover{filter:brightness(1.06);} .fbsubmit:disabled{opacity:.6;cursor:default;}
   .fbstatus{font-size:12.5px;display:none;}
   .fbthanks{display:none;}
   .fbthanks .ok{display:flex;align-items:center;gap:10px;font-size:14.5px;font-weight:650;color:var(--good);}
   .linklike{background:none;border:0;font-family:inherit;font-size:13px;color:var(--muted);cursor:pointer;padding:0;}
   .linklike:hover{color:var(--blue);}
+  #sumTitle:focus{outline:none;}
+
+  @media print{
+    .topbar,.rbar,footer,.head .privacy,.filters{display:none !important;}
+    body{background:#fff;}
+    .panel{box-shadow:none;break-inside:avoid;}
+    .find{break-inside:avoid;}
+  }
 </style>
 <script type="application/ld+json">
 {
@@ -315,7 +324,7 @@
         <div class="t1">Drop a .sppkg file here</div>
         <div class="or">or</div>
         <div class="row">
-          <label class="btn primary" for="file">Choose file<input type="file" id="file" class="vh" accept=".sppkg"></label>
+          <label class="btn primary" for="file">Choose file<input type="file" id="file" class="vh" accept=".sppkg,application/zip,application/octet-stream"></label>
           <button type="button" class="btn" id="btnSample">Try a sample package</button>
         </div>
         <div class="hint">.sppkg only &middot; up to 100 MB &middot; nothing is uploaded</div>
@@ -368,7 +377,7 @@
         <a href="https://www.linkedin.com/newsletters/copilot-governed" target="_blank" rel="noopener">Newsletter</a>
         <button type="button" class="linklike" id="discOpen">Disclaimer</button>
         <span class="spacer"></span>
-        <span>Runs in your browser.</span>
+        <span>v1.0.1 &middot; Runs in your browser.</span>
       </div>
     </footer>
   </div>
@@ -393,10 +402,10 @@
         <input type="hidden" name="tool" id="fbTool" value="">
         <input type="hidden" name="page" id="fbPage" value="">
         <input type="checkbox" name="botcheck" id="fbBot" tabindex="-1" autocomplete="off" style="display:none !important;">
-        <div class="fbfield"><label>Name <span class="req">*</span></label><input name="name" id="fbName" required placeholder="Your name"></div>
-        <div class="fbfield"><label>Email <span class="req">*</span></label><input type="email" name="email" id="fbEmail" required placeholder="you@example.com"></div>
-        <div class="fbfield"><label>Role / Company <span class="opt">(optional)</span></label><input name="role" placeholder="e.g. SharePoint Admin, Contoso"></div>
-        <div class="fbfield"><label>Your feedback <span class="req">*</span></label><textarea name="message" id="fbMsg" required placeholder="What did you use it for? What worked well, or what would make it better?"></textarea></div>
+        <div class="fbfield"><label for="fbName">Name <span class="req">*</span></label><input name="name" id="fbName" required autocomplete="name" placeholder="Your name"></div>
+        <div class="fbfield"><label for="fbEmail">Email <span class="req">*</span></label><input type="email" name="email" id="fbEmail" required autocomplete="email" placeholder="you@example.com"></div>
+        <div class="fbfield"><label for="fbRole">Role / Company <span class="opt">(optional)</span></label><input name="role" id="fbRole" placeholder="e.g. SharePoint Admin, Contoso"></div>
+        <div class="fbfield"><label for="fbMsg">Your feedback <span class="req">*</span></label><textarea name="message" id="fbMsg" required placeholder="What did you use it for? What worked well, or what would make it better?"></textarea></div>
         <label class="fbcheck"><input type="checkbox" name="consent_to_share" value="Yes, may be shared publicly as a testimonial"><span><b>You may share my feedback publicly as a testimonial</b>Optional. Leave unticked to keep it private.</span></label>
         <div class="fbrow">
           <button type="submit" class="fbsubmit" id="fbSubmit">Send feedback</button>
@@ -420,38 +429,54 @@
   });
   // nav: mobile burger + dropdown toggles
   var burger=document.getElementById('burger'), nav=document.getElementById('nav');
-  if(burger) burger.addEventListener('click',function(e){ e.stopPropagation(); nav.classList.toggle('open'); });
+  function closeMenus(){ document.querySelectorAll('.drop').forEach(function(x){ x.classList.remove('open'); x.querySelector('.drop-t').setAttribute('aria-expanded','false'); }); }
+  if(burger){ burger.setAttribute('aria-expanded','false'); burger.setAttribute('aria-controls','nav');
+    burger.addEventListener('click',function(e){ e.stopPropagation(); burger.setAttribute('aria-expanded',String(nav.classList.toggle('open'))); }); }
   document.querySelectorAll('.drop-t').forEach(function(btn){
+    btn.setAttribute('aria-expanded','false');
     btn.addEventListener('click',function(e){
       e.stopPropagation();
       var d=btn.parentElement, wasOpen=d.classList.contains('open');
-      document.querySelectorAll('.drop').forEach(function(x){ x.classList.remove('open'); });
-      if(!wasOpen) d.classList.add('open');
+      closeMenus();
+      if(!wasOpen){ d.classList.add('open'); btn.setAttribute('aria-expanded','true'); }
     });
   });
-  document.addEventListener('click',function(){ document.querySelectorAll('.drop').forEach(function(x){ x.classList.remove('open'); }); });
+  document.addEventListener('click',closeMenus);
+  document.addEventListener('keydown',function(e){ if(e.key==='Escape'){ closeMenus(); if(nav.classList.contains('open')){ nav.classList.remove('open'); if(burger){ burger.setAttribute('aria-expanded','false'); burger.focus(); } } } });
 
   function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
   function kb(n){ return n>=1048576 ? (n/1048576).toFixed(2)+' MB' : (n>=1024 ? (n/1024).toFixed(1)+' KB' : n+' B'); }
 
   // ---- zip reader (central directory + deflate-raw via DecompressionStream, no library) ----
-  var MAX_FILE=100*1048576, MAX_ENTRY=60*1048576, MAX_TOTAL=300*1048576;
+  var TOOL_VERSION='1.0.1';
+  var MAX_FILE=100*1048576, MAX_ENTRY=60*1048576, MAX_TOTAL=300*1048576, MAX_ENTRIES=20000;
+  // errors with .friendly are shown to the user as-is; anything else gets a generic message
+  function fail(msg){ var e=new Error(msg); e.friendly=true; return e; }
   function openZip(buf){
     var dv=new DataView(buf), u8=new Uint8Array(buf), eocd=-1;
     for(var i=u8.length-22;i>=Math.max(0,u8.length-22-65535);i--){ if(dv.getUint32(i,true)===0x06054b50){ eocd=i; break; } }
-    if(eocd<0) throw new Error('This file is not a valid .sppkg. An .sppkg is a ZIP package, and no ZIP directory was found.');
+    if(eocd<0) throw fail('This file is not a valid .sppkg. An .sppkg is a ZIP package, and no ZIP directory was found.');
     var count=dv.getUint16(eocd+10,true), p=dv.getUint32(eocd+16,true);
-    if(p===0xFFFFFFFF||count===0xFFFF) throw new Error('This package uses the ZIP64 format, which this tool does not read yet.');
+    if(p===0xFFFFFFFF||count===0xFFFF) throw fail('This package uses the ZIP64 format, which this tool does not read yet.');
+    if(count>MAX_ENTRIES) throw fail('This package has more than '+MAX_ENTRIES+' files, which is far more than an SPFx package should have.');
     var dec=new TextDecoder('utf-8'), entries=[];
     for(var n=0;n<count;n++){
-      if(p+46>u8.length||dv.getUint32(p,true)!==0x02014b50) throw new Error('The package directory is damaged.');
+      if(p+46>u8.length||dv.getUint32(p,true)!==0x02014b50) throw fail('The package directory is damaged. Try downloading or building the package again.');
       var nlen=dv.getUint16(p+28,true), xlen=dv.getUint16(p+30,true), clen=dv.getUint16(p+32,true);
-      var name=dec.decode(u8.subarray(p+46,p+46+nlen)).replace(/\\/g,'/');
-      entries.push({ name:name, flags:dv.getUint16(p+8,true), method:dv.getUint16(p+10,true),
-        csize:dv.getUint32(p+20,true), size:dv.getUint32(p+24,true), lho:dv.getUint32(p+42,true) });
+      if(p+46+nlen>u8.length) throw fail('The package directory is damaged. Try downloading or building the package again.');
+      var name=dec.decode(u8.subarray(p+46,p+46+nlen)).replace(/\\/g,'/').replace(/^(\.\/|\/)+/,'');
+      var e={ name:name, flags:dv.getUint16(p+8,true), method:dv.getUint16(p+10,true),
+        csize:dv.getUint32(p+20,true), size:dv.getUint32(p+24,true), lho:dv.getUint32(p+42,true) };
+      if(e.csize===0xFFFFFFFF||e.size===0xFFFFFFFF||e.lho===0xFFFFFFFF) throw fail('This package uses the ZIP64 format, which this tool does not read yet.');
+      entries.push(e);
       p+=46+nlen+xlen+clen;
     }
     entries=entries.filter(function(e){ return !/\/$/.test(e.name); });
+    // a well-formed archive never points two entries at one local header, and its
+    // compressed data cannot add up to more than the file itself
+    var seen=Object.create(null), csum=0;
+    entries.forEach(function(e){ if(seen[e.lho]) throw fail('The package directory is damaged (two files share one location).'); seen[e.lho]=1; csum+=e.csize; });
+    if(csum>u8.length) throw fail('The package directory is damaged (file sizes do not add up).');
     var budget=MAX_TOTAL;
     async function readBytes(e){
       if(e.flags&1) throw new Error('encrypted entry');
@@ -461,38 +486,57 @@
       var start=lh+30+dv.getUint16(lh+26,true)+dv.getUint16(lh+28,true);
       if(start+e.csize>u8.length) throw new Error('truncated entry');
       var data=u8.subarray(start,start+e.csize);
-      budget-=e.size;
-      if(e.method===0) return data;
+      if(e.method===0){ if(e.csize!==e.size) throw new Error('stored size mismatch'); budget-=e.size; return data; }
       if(e.method!==8) throw new Error('unsupported compression');
-      var ds=new DecompressionStream('deflate-raw');
-      var out=await new Response(new Blob([data]).stream().pipeThrough(ds)).arrayBuffer();
-      return new Uint8Array(out);
+      // the declared size can lie, so count what the decompressor actually produces and stop at the cap
+      var cap=Math.min(e.size,MAX_ENTRY,budget), got=0, parts=[];
+      var rd=new Blob([data]).stream().pipeThrough(new DecompressionStream('deflate-raw')).getReader();
+      for(;;){
+        var c=await rd.read(); if(c.done) break;
+        got+=c.value.length;
+        if(got>cap){ try{ await rd.cancel(); }catch(x){} budget-=got; throw new Error('entry larger than declared'); }
+        parts.push(c.value);
+      }
+      budget-=got;
+      var out=new Uint8Array(got), o=0; parts.forEach(function(p){ out.set(p,o); o+=p.length; });
+      return out;
     }
     return { entries:entries, readText: async function(e){ var b=await readBytes(e); return dec.decode(b).replace(/^﻿/,''); } };
   }
 
   // ---- reference data ----
   var ASSET_LIB='https://spclientsideassetlibrary/';
-  var MS_DOMAINS=['microsoft.com','microsoftonline.com','office.com','office.net','office365.com','sharepoint.com','sharepointonline.com','sharepoint-df.com','onmicrosoft.com','outlook.com','live.com','live.net','login.windows.net','graph.windows.net','azure.com','azure.net','msecnd.net','msauth.net','msftauth.net','msocdn.com','aka.ms','bing.com','cloud.microsoft','static.microsoft','svc.ms','microsoft365.com','onenote.com','skype.com','visualstudio.com','powerapps.com','powerbi.com','dynamics.com','yammer.com','msidentity.com','windowsazure.com','spoprod-a.akamaihd.net'];
-  // Azure suffixes anyone can host on: a customer or vendor resource, not Microsoft itself
-  var CUSTOMER_HOSTED=['azurewebsites.net','cloudapp.azure.com','cloudapp.net','core.windows.net','azureedge.net','azurefd.net','azure-api.net','azurestaticapps.net','trafficmanager.net','servicebus.windows.net','database.windows.net','vault.azure.net','azurecontainerapps.io','azurecr.io'];
-  // hosts that show up in bundles as licence headers, error-message links or XML namespaces, not as calls
-  var DOC_DOMAINS=['w3.org','reactjs.org','react.dev','fb.me','github.com','mozilla.org','npmjs.com','npmjs.org','example.com','example.org','example.net','schema.org','json-schema.org','openxmlformats.org','purl.org','xmlsoap.org','unicode.org','tc39.es','babeljs.io','lodash.com','momentjs.com','typescriptlang.org','nodejs.org','webpack.js.org','ecma-international.org','whatwg.org','ietf.org','iana.org','apache.org','opensource.org','mit-license.org','feross.org','fluentui.dev','developer.microsoft.com','learn.microsoft.com','docs.microsoft.com','stackoverflow.com','jsperf.com','pnp.github.io','localhost','127.0.0.1'];
+  var MS_DOMAINS=['microsoft.com','microsoftonline.com','office.com','office.net','office365.com','sharepointonline.com','onmicrosoft.com','outlook.com','live.com','live.net','login.windows.net','graph.windows.net','azure.com','azure.net','msecnd.net','msauth.net','msftauth.net','msocdn.com','aka.ms','bing.com','cloud.microsoft','static.microsoft','svc.ms','microsoft365.com','onenote.com','skype.com','powerapps.com','powerbi.com','yammer.com','msidentity.com','windowsazure.com','spoprod-a.akamaihd.net'];
+  // suffixes anyone can get a host under: a customer or vendor resource, not Microsoft itself.
+  // logic.azure.com covers Logic App / flow HTTP triggers, an easy place to send data.
+  var CUSTOMER_HOSTED=['azurewebsites.net','cloudapp.azure.com','cloudapp.net','core.windows.net','azureedge.net','azurefd.net','azure-api.net','azurestaticapps.net','trafficmanager.net','servicebus.windows.net','database.windows.net','vault.azure.net','azurecontainerapps.io','azurecr.io','logic.azure.com','vo.msecnd.net','dynamics.com','visualstudio.com'];
+  // another organisation's SharePoint looks like Microsoft but is not yours
+  var TENANT_HOSTED=['sharepoint.com','sharepoint-df.com','sharepoint.us','sharepoint.de','sharepoint.cn'];
+  // hosts that show up in bundles as licence headers, error-message links or XML namespaces, not as calls.
+  // Matched exactly (or with www.), so api.github.com or registry.npmjs.org do not count as docs.
+  var DOC_DOMAINS=['w3.org','reactjs.org','legacy.reactjs.org','react.dev','fb.me','github.com','gist.github.com','mozilla.org','developer.mozilla.org','npmjs.com','npmjs.org','example.com','example.org','example.net','schema.org','json-schema.org','schemas.openxmlformats.org','purl.org','schemas.xmlsoap.org','unicode.org','tc39.es','babeljs.io','lodash.com','momentjs.com','typescriptlang.org','nodejs.org','webpack.js.org','ecma-international.org','whatwg.org','html.spec.whatwg.org','ietf.org','tools.ietf.org','iana.org','apache.org','opensource.org','mit-license.org','feross.org','fluentui.dev','developer.microsoft.com','learn.microsoft.com','docs.microsoft.com','schemas.microsoft.com','stackoverflow.com','jsperf.com','pnp.github.io','localhost','127.0.0.1'];
   function hostIn(h,list){ return list.some(function(d){ return h===d||h.slice(-(d.length+1))==='.'+d; }); }
+  function hostExact(h,list){ return list.indexOf(h)>=0||(h.slice(0,4)==='www.'&&list.indexOf(h.slice(4))>=0); }
   function hostGroup(h){
+    if(hostExact(h,DOC_DOMAINS)) return 'docs';
+    if(/^\d{1,3}(\.\d{1,3}){3}$/.test(h)) return 'third';
     if(hostIn(h,CUSTOMER_HOSTED)) return 'third';
-    if(hostIn(h,['developer.microsoft.com','learn.microsoft.com','docs.microsoft.com'])) return 'docs';
-    return hostIn(h,MS_DOMAINS)?'ms':(hostIn(h,DOC_DOMAINS)?'docs':'third');
+    if(hostIn(h,TENANT_HOSTED)) return 'tenant';
+    return hostIn(h,MS_DOMAINS)?'ms':'third';
   }
 
   // Graph scope reach. SPFx grants are delegated: the user's own access is the ceiling, but the grant is tenant-wide.
   function rateScope(resource,scope){
     var r=(resource||'').toLowerCase(), s=(scope||'').toLowerCase();
     var graph=r==='microsoft graph'||r.indexOf('graph.microsoft.com')>=0||r==='00000003-0000-0000-c000-000000000000';
+    // SharePoint and Exchange Online expose their own scopes (AllSites.*, EWS.AccessAsUser.All)
+    var spo=r==='office 365 sharepoint online'||r==='sharepoint'||r==='00000003-0000-0ff1-ce00-000000000000';
+    var exo=r==='office 365 exchange online'||r==='00000002-0000-0ff1-ce00-000000000000';
     if(r==='windows azure active directory'||r.indexOf('graph.windows.net')>=0) return {lvl:'Medium',why:'Azure AD Graph is deprecated. The package should move to Microsoft Graph.'};
-    if(!graph) return {lvl:'Medium',why:'A custom or third-party API. Confirm what it is, who runs it, and what the scope allows.'};
-    if(/readwrite\.all$|^directory\.(readwrite|accessasuser)|^rolemanagement|^application\.readwrite|^approleassignment|fullcontrol|^sites\.manage\.all|^mail\.send|^mail\.readwrite|^mailboxsettings\.readwrite|^policy\.|^domain\.|^privilegedaccess|^chat\.readwrite|^user\.readwrite\.all|^group\.readwrite/.test(s))
-      return {lvl:'High',why:'Can change or send data across the tenant, or read the directory, on behalf of any user who loads the page.'};
+    if(!graph&&!spo&&!exo) return {lvl:'Medium',why:'A custom or third-party API. Confirm what it is, who runs it, and what the scope allows.'};
+    if(spo&&/^allsites\.read$|^myfiles\.read$/.test(s)) return {lvl:'Medium',why:'Reads every SharePoint site the signed-in user can access.'};
+    if(/readwrite\.all$|^directory\.(readwrite|accessasuser)|^rolemanagement|^application\.readwrite|^approleassignment|fullcontrol|^sites\.manage\.all|^mail\.send|^mail\.readwrite|^mailboxsettings\.readwrite|^policy\.|^domain\.|^privilegedaccess|^chat\.readwrite|^user\.readwrite\.all|^group\.readwrite|accessasuser|^allsites\.(write|manage)|^myfiles\.write|^termstore\.readwrite|^user\.readwrite\.all/.test(s))
+      return {lvl:'High',why:/readwrite|send|manage|fullcontrol|accessasuser/.test(s)?'Can change or send data across the tenant on behalf of any user who loads the page.':'Reads sensitive tenant configuration or roles.'};
     if(s==='sites.selected') return {lvl:'Low',why:'Only reaches sites an admin grants explicitly.'};
     if(/^(user\.read|user\.readbasic\.all|profile|openid|email|offline_access|people\.read|presence\.read)$/.test(s)) return {lvl:'Low',why:'Basic profile or directory lookup data.'};
     if(/\.read\.all$/.test(s)) return {lvl:'Medium',why:'Reads every item of this kind the signed-in user can access, not only the current site.'};
@@ -506,10 +550,10 @@
     {id:'entra',lvl:'High',title:'Looks like an Entra ID client secret',re:/(?:^|[\\'"`\s>=:(,)])([a-zA-Z0-9_~.]{3}\dQ~[a-zA-Z0-9_~.\-]{31,34})(?=$|[\\'"`\s<),])/g,g:1,
       detail:'A string in the Entra ID (Azure AD) client secret format was found. Anyone who can load the page can read shipped JavaScript.',
       fix:'Reject the package. The secret must be rotated in Entra ID and the call moved behind a server-side API.'},
-    {id:'storage',lvl:'High',title:'Azure Storage account key or connection string',re:/AccountKey=([A-Za-z0-9+\/]{40,}={0,2})/g,g:1,
+    {id:'storage',lvl:'High',title:'Azure Storage account key or connection string',re:/AccountKey=([A-Za-z0-9+\/]{40,120}={0,2})/g,g:1,
       detail:'An Azure Storage account key gives full control of the storage account to whoever reads it.',
       fix:'Reject the package. Rotate the storage key and use a managed identity or short-lived SAS from a server.'},
-    {id:'sas',lvl:'High',title:'Azure SAS token',re:/[?&]sv=\d{4}-\d{2}-\d{2}[^"'`\s]*?[&?]sig=([A-Za-z0-9%+\/=]{20,})/g,g:1,
+    {id:'sas',lvl:'High',title:'Azure SAS token',re:/[?&]sig=([A-Za-z0-9%+\/=]{20,200})/g,g:1,near:/[?&]sv=\d{4}-\d{2}-\d{2}[^"'`\s]*$/,
       detail:'A shared access signature grants access to Azure storage until it expires, to anyone who has it.',
       fix:'Check its expiry and permissions. Revoke it if long-lived, and issue SAS tokens from a server at runtime.'},
     {id:'pkey',lvl:'High',title:'Private key',re:/-----BEGIN (?:RSA |EC |DSA |OPENSSH |ENCRYPTED )?PRIVATE KEY-----/g,g:0,
@@ -527,7 +571,7 @@
     {id:'gkey',lvl:'Medium',title:'Google API key',re:/\b(AIza[0-9A-Za-z_\-]{35})\b/g,g:1,
       detail:'Browser Google API keys are often meant to be public (for example Maps), but they should be restricted to known referrers.',
       fix:'Ask the vendor whether the key is referrer-restricted.'},
-    {id:'jwt',lvl:'Medium',title:'Embedded token (JWT)',re:/\b(eyJ[A-Za-z0-9_\-]{10,}\.eyJ[A-Za-z0-9_\-]{10,}\.[A-Za-z0-9_\-]{10,})/g,g:1,
+    {id:'jwt',lvl:'Medium',title:'Embedded token (JWT)',re:/(?<![A-Za-z0-9_\-])(eyJ(?=([A-Za-z0-9_\-]{10,4096}))\2\.eyJ(?=([A-Za-z0-9_\-]{10,8192}))\3\.[A-Za-z0-9_\-]{10,2048})/g,g:1,
       detail:'A signed token is embedded in the code. If it is still valid, anyone can replay it.',
       fix:'Ask what the token is for and whether it has expired.'}
   ];
@@ -535,7 +579,14 @@
   var NOT_SECRET=/^(password|secret|text|new-password|current-password|undefined|null|true|false|string|hidden)$|placeholder|your|xxxx|<|\{\{|\$\{|process\.env|^[*•.]+$/i;
   function entropy(s){ var m={},h=0; for(var i=0;i<s.length;i++) m[s[i]]=(m[s[i]]||0)+1; for(var k in m){ var p=m[k]/s.length; h-=p*Math.log2(p);} return h; }
   function mask(v){ v=String(v); return v.length<=6 ? '••••' : v.slice(0,4)+'•••••••• ('+v.length+' chars)'; }
-  function where(text,idx){ var line=1,last=-1; for(var i=0;i<idx;i++){ if(text.charCodeAt(i)===10){ line++; last=i; } } return 'line '+line+', col '+(idx-last); }
+  // line/col lookup: newline offsets are computed once per file, then binary-searched
+  var LINES={text:null,starts:null};
+  function where(text,idx){
+    if(LINES.text!==text){ var st=[0]; for(var i=0;i<text.length;i++){ if(text.charCodeAt(i)===10) st.push(i+1); } LINES={text:text,starts:st}; }
+    var a=LINES.starts, lo=0, hi=a.length-1;
+    while(lo<hi){ var mid=(lo+hi+1)>>1; if(a[mid]<=idx) lo=mid; else hi=mid-1; }
+    return 'line '+(lo+1)+', col '+(idx-a[lo]+1);
+  }
   function snippet(text,idx,len,secret){
     var a=Math.max(0,idx-40), b=Math.min(text.length,idx+len+40);
     var s=text.slice(a,idx)+(secret?mask(text.substr(idx,len)):text.substr(idx,len))+text.slice(idx+len,b);
@@ -544,17 +595,17 @@
 
   // ---- analysis ----
   async function analyze(pkg){
-    var byName={}; pkg.entries.forEach(function(e){ byName[e.name.toLowerCase()]=e; });
+    var byName=Object.create(null); pkg.entries.forEach(function(e){ byName[e.name.toLowerCase()]=e; });
     var amE=byName['appmanifest.xml'];
-    if(!amE) throw new Error('No AppManifest.xml was found, so this is not an SPFx package. Is it an add-in (.app) or a different ZIP?');
+    if(!amE) throw fail('No AppManifest.xml was found, so this is not an SPFx package. Is it an add-in (.app) or a different ZIP?');
     var skipped=[];
     async function text(e){ try{ return await pkg.readText(e); }catch(err){ skipped.push(e.name); return null; } }
     function xml(t){ var d=new DOMParser().parseFromString(t,'application/xml'); return d.getElementsByTagName('parsererror').length?null:d; }
     function all(d,tag){ return Array.prototype.slice.call(d.getElementsByTagNameNS('*',tag)); }
 
     var amT=await text(amE), am=amT&&xml(amT);
-    if(!am) throw new Error('AppManifest.xml could not be read.');
-    var app=all(am,'App')[0]; if(!app) throw new Error('AppManifest.xml has no <App> element.');
+    if(!am) throw fail('AppManifest.xml could not be read. The package may be damaged.');
+    var app=all(am,'App')[0]; if(!app) throw fail('AppManifest.xml has no <App> element, so this is not an SPFx package.');
     var R={ file:pkg.fileName, fileSize:pkg.fileSize, sample:!!pkg.sample, findings:[], passed:[], skipped:skipped };
     var titleEl=all(am,'Title')[0];
     R.solution={ name:app.getAttribute('Name')||'', title:titleEl?titleEl.textContent.trim():'', id:app.getAttribute('ProductID')||'',
@@ -562,49 +613,68 @@
       skipFeatureDeployment:/^true$/i.test(app.getAttribute('SkipFeatureDeployment')||''), domainIsolated:/^true$/i.test(app.getAttribute('IsDomainIsolated')||'') };
     var dev={}; var devEl=all(am,'DeveloperProperties')[0];
     if(devEl){ try{ dev=JSON.parse(devEl.textContent)||{}; }catch(e){} }
-    R.developer={ name:dev.name||'', websiteUrl:dev.websiteUrl||'', privacyUrl:dev.privacyUrl||'', termsOfUseUrl:dev.termsOfUseUrl||'', mpnId:dev.mpnId||'' };
+    if(!dev||typeof dev!=='object') dev={};
+    function str(v){ return typeof v==='string'?v:''; }
+    R.developer={ name:str(dev.name), websiteUrl:str(dev.websiteUrl), privacyUrl:str(dev.privacyUrl), termsOfUseUrl:str(dev.termsOfUseUrl), mpnId:str(dev.mpnId) };
     R.permissions=all(am,'WebApiPermissionRequest').map(function(x){ var res=x.getAttribute('ResourceId')||'', sc=x.getAttribute('Scope')||''; var r=rateScope(res,sc); return {resource:res,scope:sc,level:r.lvl,why:r.why}; });
 
     // component manifests + provisioning in every element/feature XML
     R.components=[]; R.instances=[]; R.provisions={lists:0,fields:0,contentTypes:0,customActions:0};
-    var referenced={}, externalBases={}, externalScripts=[], spfx='';
+    var referenced=Object.create(null), externalBases=Object.create(null), externalScripts=[], spfx='';
     var xmls=pkg.entries.filter(function(e){ return /\.xml$/i.test(e.name) && !/^_rels\//i.test(e.name) && e.name.toLowerCase()!=='appmanifest.xml' && e.name!=='[Content_Types].xml'; });
     for(var i=0;i<xmls.length;i++){
       var t=await text(xmls[i]); if(!t||t.indexOf('<')<0) continue; var d=xml(t); if(!d) continue;
       all(d,'ClientSideComponent').forEach(function(c){
-        var m={}; try{ m=JSON.parse(c.getAttribute('ComponentManifest')||'{}'); }catch(e){}
-        var pe=(m.preconfiguredEntries&&m.preconfiguredEntries[0])||{}, tt=pe.title&&(pe.title['default']||pe.title[Object.keys(pe.title)[0]]);
-        var lc=m.loaderConfig||{}, bases=lc.internalModuleBaseUrls||[], sr=lc.scriptResources||{};
-        bases.forEach(function(b){ if(String(b).toLowerCase()!==ASSET_LIB) externalBases[b]=1; });
-        Object.keys(sr).forEach(function(k){
-          var v=sr[k]||{};
-          if(k==='@microsoft/sp-core-library'&&v.version) spfx=v.version;
-          var paths=[]; if(typeof v.path==='string') paths.push(v.path); if(v.paths&&typeof v.paths==='object') Object.keys(v.paths).forEach(function(l){ paths.push(v.paths[l]); });
-          if(typeof v.defaultPath==='string') paths.push(v.defaultPath);
-          paths.forEach(function(p){ if(/^https?:\/\//i.test(p)) externalScripts.push(p); else referenced[p.split('/').pop().toLowerCase()]=1; });
-        });
-        R.components.push({ name:tt||c.getAttribute('Name')||m.alias||'(unnamed)', id:m.id||c.getAttribute('Id')||'', type:m.componentType||c.getAttribute('Type')||'',
-          extensionType:m.extensionType||'', version:m.version||'', hosts:m.supportedHosts||[] });
+        // one malformed manifest must not stop the rest of the package being inspected
+        var m={}; try{ m=JSON.parse(c.getAttribute('ComponentManifest')||'{}')||{}; }catch(e){}
+        if(!m||typeof m!=='object'||Array.isArray(m)) m={};
+        try{
+          var pe=(Array.isArray(m.preconfiguredEntries)&&m.preconfiguredEntries[0])||{}, pt=(pe.title&&typeof pe.title==='object')?pe.title:{};
+          var tt=str(pt['default'])||str(pt[Object.keys(pt)[0]]);
+          var lc=(m.loaderConfig&&typeof m.loaderConfig==='object')?m.loaderConfig:{}, bases=Array.isArray(lc.internalModuleBaseUrls)?lc.internalModuleBaseUrls:[], sr=(lc.scriptResources&&typeof lc.scriptResources==='object')?lc.scriptResources:{};
+          bases.forEach(function(b){ b=String(b); if(b.toLowerCase()!==ASSET_LIB) externalBases[b]=1; });
+          Object.keys(sr).forEach(function(k){
+            var v=(sr[k]&&typeof sr[k]==='object')?sr[k]:{};
+            if(k==='@microsoft/sp-core-library'&&str(v.version)) spfx=v.version;
+            var paths=[str(v.path),str(v.defaultPath)];
+            if(v.paths&&typeof v.paths==='object') Object.keys(v.paths).forEach(function(l){ paths.push(str(v.paths[l])); });
+            paths.filter(Boolean).forEach(function(p){ if(/^https?:\/\//i.test(p)) externalScripts.push(p); else referenced[p.split('/').pop().toLowerCase()]=1; });
+          });
+        }catch(e){ R.badManifests=(R.badManifests||0)+1; }
+        R.components.push({ name:String(tt||c.getAttribute('Name')||str(m.alias)||'(unnamed)'), id:String(str(m.id)||c.getAttribute('Id')||''), type:String(str(m.componentType)||c.getAttribute('Type')||''),
+          extensionType:str(m.extensionType), version:str(m.version), hosts:Array.isArray(m.supportedHosts)?m.supportedHosts.map(String):[] });
       });
       all(d,'ClientSideComponentInstance').forEach(function(x){ R.instances.push({ title:x.getAttribute('Title')||'', location:x.getAttribute('Location')||'', componentId:x.getAttribute('ComponentId')||'' }); });
       R.provisions.lists+=all(d,'ListInstance').length; R.provisions.fields+=all(d,'Field').length;
       R.provisions.contentTypes+=all(d,'ContentType').length; R.provisions.customActions+=all(d,'CustomAction').length;
     }
-    if(!spfx && /-(\d+\.\d+\.\d+)$/.test(R.developer.mpnId)) spfx=R.developer.mpnId.match(/-(\d+\.\d+\.\d+)$/)[1];
+    var mv=R.developer.mpnId.match(/-(\d+\.\d+\.\d+)$/);
+    if(!spfx && mv) spfx=mv[1];
     R.solution.spfx=spfx;
 
     // code scan
     var assets=pkg.entries.filter(function(e){ return /^clientsideassets\//i.test(e.name); });
-    var jsFiles=assets.filter(function(e){ return /\.js$/i.test(e.name); });
+    var jsFiles=assets.filter(function(e){ return /\.js$/i.test(e.name) || referenced[e.name.split('/').pop().toLowerCase()]; });
     var maps=pkg.entries.filter(function(e){ return /\.map$/i.test(e.name); });
-    var scanFiles=pkg.entries.filter(function(e){ return /\.(js|json|xml|txt|html?|css)$/i.test(e.name) && !/^_rels\//i.test(e.name) && e.name!=='[Content_Types].xml'; });
-    var hosts={}, secretHits=[], loadScripts=[], evalHits=[], fnHits=[], writeHits=[], httpHits=[];
+    // the SPFx loader will load any referenced path whatever its extension, so scan referenced files
+    // and every non-binary asset, not only *.js
+    var BINARY=/\.(png|jpe?g|gif|webp|ico|bmp|woff2?|ttf|eot|otf|mp4|mp3|zip|pdf)$/i;
+    var scanFiles=pkg.entries.filter(function(e){ var b=e.name.split('/').pop().toLowerCase();
+      return (/\.(js|json|xml|txt|html?|css|svg)$/i.test(e.name) || referenced[b] || (/^clientsideassets\//i.test(e.name)&&!BINARY.test(e.name)))
+        && !/^_rels\//i.test(e.name) && e.name!=='[Content_Types].xml' && !BINARY.test(e.name); });
+    var codeFile=function(n){ return !/\.(xml|txt)$/i.test(n); };
+    var hosts=Object.create(null), secretHits=[], loadScripts=[], evalHits=new Set(), fnHits=new Set(), writeHits=new Set(), httpHits=[];
     for(var j=0;j<scanFiles.length;j++){
       var f=scanFiles[j], s=await text(f); if(s==null) continue;
+      // manifests hold JSON inside XML attributes; decode the quotes so the secret patterns see them
+      if(/\.xml$/i.test(f.name)) s=s.replace(/&quot;/g,'"').replace(/&#39;|&apos;/g,"'").replace(/&amp;/g,'&');
       var taken=[];
       SECRETS.forEach(function(p){
         p.re.lastIndex=0; var m, k=0;
-        while((m=p.re.exec(s)) && k<5){ var val=m[p.g]||m[0], at=m.index+m[0].indexOf(val); taken.push([at,at+val.length]); secretHits.push({p:p,file:f.name,at:where(s,at),snip:snippet(s,at,val.length,p.id!=='pkey')}); k++; }
+        while((m=p.re.exec(s)) && k<5){ var val=m[p.g]||m[0], at=m.index+m[0].indexOf(val);
+          // some patterns only count when a marker sits just before the match (a SAS sig needs its sv= version)
+          if(p.near && !p.near.test(s.slice(Math.max(0,m.index-600),m.index))) continue;
+          taken.push([at,at+val.length]); secretHits.push({p:p,file:f.name,at:where(s,at),snip:snippet(s,at,val.length,p.id!=='pkey')}); k++; }
       });
       GENERIC.lastIndex=0; var g, gk=0;
       while((g=GENERIC.exec(s)) && gk<5){
@@ -612,22 +682,24 @@
         if(NOT_SECRET.test(v)||entropy(v)<3.2||!/\d/.test(v)||taken.some(function(r){ return at2<r[1]&&at2+v.length>r[0]; })) continue;
         secretHits.push({p:{id:'generic',lvl:'Medium',title:'Possible hard-coded secret',detail:'A value assigned to a field named like a secret ('+g[1]+') looks random enough to be real.',fix:'Confirm with the developer whether it is a real credential. Real credentials must not ship in client-side code.'},file:f.name,at:where(s,at2),snip:snippet(s,at2,v.length,true)}); gk++;
       }
-      if(/\.(js|json|html?|css)$/i.test(f.name)){
-        var ur=/(https?):\/\/([a-z0-9][a-z0-9.\-]*\.[a-z]{2,}|localhost)(?::\d+)?/gi, u;
-        while((u=ur.exec(s))){ var h=u[2].toLowerCase(); if(!hosts[h]) hosts[h]={host:h,count:0,files:{},http:false,group:hostGroup(h)}; hosts[h].count++; hosts[h].files[f.name.split('/').pop()]=1; if(u[1].toLowerCase()==='http'&&hosts[h].group==='third') { if(!hosts[h].http) httpHits.push({host:h,file:f.name}); hosts[h].http=true; } }
-        var lr=/loadScript\s*\(\s*["'`](https?:\/\/[^"'`]+)["'`]/g, l;
-        while((l=lr.exec(s))) loadScripts.push({url:l[1],file:f.name,at:where(s,l.index)});
-        var er=/(^|[^.\w$])eval\s*\(/g, ev; while((ev=er.exec(s))) evalHits.push(f.name);
-        var nf=/\bnew\s+Function\s*\(/g, fn; while((fn=nf.exec(s))){ if(!/return\s+this/.test(s.substr(fn.index,60))) fnHits.push(f.name); }
-        if(/document\.write(ln)?\s*\(/.test(s)) writeHits.push(f.name);
+      if(codeFile(f.name)){
+        var ur=/(https?):\/\/(\d{1,3}(?:\.\d{1,3}){3}|[a-z0-9][a-z0-9.\-]{0,252}\.[a-z]{2,24}|localhost)(?![a-z0-9\-])(?::\d+)?/gi, u;
+        while((u=ur.exec(s))){ var h=u[2].toLowerCase().replace(/\.+$/,''); if(!hosts[h]) hosts[h]={host:h,count:0,files:Object.create(null),http:false,group:hostGroup(h)}; hosts[h].count++; hosts[h].files[f.name.split('/').pop()]=1; if(u[1].toLowerCase()==='http'&&hosts[h].group==='third') { if(!hosts[h].http) httpHits.push({host:h,file:f.name}); hosts[h].http=true; } }
+        var lr=/loadScript\s*\(\s*["'`](https?:\/\/[^"'`]{1,2048})["'`]/g, l, lk=0;
+        while((l=lr.exec(s)) && lk<10){ loadScripts.push({url:l[1],file:f.name,at:where(s,l.index)}); lk++; }
+        // only the file name matters for these, so stop at the first hit per file
+        if(/(^|[^.\w$])eval\s*\(/.test(s)) evalHits.add(f.name);
+        var nf=/\bnew\s+Function\s*\(/g, fn; while((fn=nf.exec(s))){ if(!/return\s+this/.test(s.substr(fn.index,60))){ fnHits.add(f.name); break; } }
+        if(/document\.write(ln)?\s*\(/.test(s)) writeHits.add(f.name);
       }
     }
     R.domains=Object.keys(hosts).map(function(h){ var x=hosts[h]; return {host:h,group:x.group,count:x.count,files:Object.keys(x.files),http:x.http}; })
-      .sort(function(a,b){ var o={third:0,ms:1,docs:2}; return o[a.group]-o[b.group]||b.count-a.count; });
+      .sort(function(a,b){ var o={third:0,tenant:1,ms:2,docs:3}; return o[a.group]-o[b.group]||b.count-a.count; });
+    evalHits=Array.from(evalHits); fnHits=Array.from(fnHits); writeHits=Array.from(writeHits);
 
     // bundle
     var jsTotal=0; jsFiles.forEach(function(e){ jsTotal+=e.size; });
-    var stems={}; Object.keys(referenced).forEach(function(n){ stems[n.replace(/(_[0-9a-f]{8,40})?\.js$/i,'')]=1; });
+    var stems=Object.create(null); Object.keys(referenced).forEach(function(n){ stems[n.replace(/(_[0-9a-f]{8,40})?\.js$/i,'')]=1; });
     var stale=jsFiles.filter(function(e){ var b=e.name.split('/').pop().toLowerCase(); return !referenced[b] && stems[b.replace(/(_[0-9a-f]{8,40})?\.js$/i,'')]; });
     var staleSize=0; stale.forEach(function(e){ staleSize+=e.size; });
     R.bundle={ jsTotal:jsTotal, jsCount:jsFiles.length, packaged:assets.length>0,
@@ -670,7 +742,12 @@
     if(third.length) add('Medium','References '+third.length+' third-party domain'+(third.length>1?'s':''),'These hosts appear in the shipped code. Some will be harmless library links, but any of them could receive data. Check the list under Domains in the code.',
       third.slice(0,10).map(function(d){ return d.host+'  ('+d.count+'×, '+d.files[0]+(d.files.length>1?' +'+(d.files.length-1):'')+')'; }).join('\n')+(third.length>10?'\n…':''),'Ask the vendor what each domain is for.');
     else pass('No third-party domains in the code');
-    if(httpHits.length) add('Low','Plain http:// URLs','Requests over http:// are not encrypted and are blocked as mixed content on SharePoint pages.',httpHits.slice(0,6).map(function(h){ return 'http://'+h.host+'  ('+h.file.split('/').pop()+')'; }).join('\n'),'Ask for https:// URLs.');
+    var ten=R.domains.filter(function(d){ return d.group==='tenant'; });
+    if(ten.length) add('Medium','Hard-coded SharePoint tenant URL'+(ten.length>1?'s':''),'The code points at a specific SharePoint tenant. If it is not your tenant, the package could read from or send data to another organisation.',
+      ten.slice(0,10).map(function(d){ return d.host+'  ('+d.count+'×, '+d.files[0]+')'; }).join('\n'),'Check each host is your own tenant. A well-built package reads the current site URL at runtime instead.');
+    else pass('No hard-coded SharePoint tenant URLs');
+    if(R.badManifests) add('Low','Some component manifests could not be read',R.badManifests+' component manifest(s) had an unexpected shape, so parts of them were not checked.','ComponentManifest attributes in the feature XML','Ask the developer to rebuild the package with a supported SPFx version.');
+    if(httpHits.length) add('Low','Plain http:// URLs','Requests over http:// are not encrypted, and browsers block or flag them as mixed content on SharePoint pages.',httpHits.slice(0,6).map(function(h){ return 'http://'+h.host+'  ('+h.file.split('/').pop()+')'; }).join('\n'),'Ask for https:// URLs.');
     else pass('No plain http:// URLs');
 
     if(R.instances.length) add('Medium','Switches on extensions across sites','The package includes extension instances that are added automatically when it is deployed tenant-wide, so they run on every site without a per-site install.',
@@ -692,7 +769,7 @@
     var big=R.bundle.top.filter(function(b){ return b.referenced&&b.size>1048576; });
     if(big.length) add('Low','Large bundle','Large bundles slow down every page that hosts the component.',big.map(function(b){ return b.name+'  '+kb(b.size); }).join('\n'),'Optional. Ask whether large libraries can be split out or loaded on demand.');
 
-    var ids={}, dup=[]; R.components.forEach(function(c){ if(c.id){ if(ids[c.id]) dup.push(c.id); ids[c.id]=1; } });
+    var ids=Object.create(null), dup=[]; R.components.forEach(function(c){ if(c.id){ if(ids[c.id]) dup.push(c.id); ids[c.id]=1; } });
     if(dup.length) add('Medium','Duplicate component IDs','Two components share an ID, so one will replace the other in the app catalog.',uniq(dup).join('\n'),'Ask the developer to give each component a unique ID.');
     else if(R.components.length) pass('Component IDs are unique');
     if(!R.developer.name&&!R.developer.websiteUrl) add('Low','No publisher details','The package does not say who built it (developer name and website are empty).','AppManifest.xml → DeveloperProperties','Ask the vendor to fill in the developer section of package-solution.json.');
@@ -718,20 +795,20 @@
     var s=R.solution;
     document.getElementById('sum').innerHTML=
       '<div class="sum-top"><div style="min-width:0"><div class="sum-file">'+esc(R.file)+' &middot; '+esc(kb(R.fileSize))+(R.sample?' &middot; made-up sample':'')+'</div>'+
-      '<h2>'+esc(s.title||s.name||'(untitled solution)')+'</h2>'+
+      '<h2 id="sumTitle" tabindex="-1">'+esc(s.title||s.name||'(untitled solution)')+'</h2>'+
       '<div class="sum-meta">Version '+esc(s.version||'?')+(s.spfx?' &middot; SPFx '+esc(s.spfx):'')+' &middot; Solution ID <span class="mono">'+esc(s.id||'?')+'</span></div>'+
       (R.developer.name||R.developer.websiteUrl?'<div class="sum-meta">Publisher: '+esc(R.developer.name||'?')+(R.developer.websiteUrl?' &middot; '+esc(R.developer.websiteUrl):'')+'</div>':'')+'</div>'+
       '<div class="verdict '+v[0]+'"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+icon+'</svg><div>'+v[1]+'<small>'+v[2]+'</small></div></div></div>'+
-      '<div class="tiles"><div class="tile"><div class="n c-high">'+R.counts.High+'</div><div class="l">High</div></div><div class="tile"><div class="n c-med">'+R.counts.Medium+'</div><div class="l">Medium</div></div><div class="tile"><div class="n c-low">'+R.counts.Low+'</div><div class="l">Low</div></div><div class="tile"><div class="n c-ok">'+R.passed.length+'</div><div class="l">Checks passed</div></div></div>';
+      '<div class="tiles"><div class="tile"><div class="n '+(R.counts.High?'c-high':'c-low')+'">'+R.counts.High+'</div><div class="l">High</div></div><div class="tile"><div class="n '+(R.counts.Medium?'c-med':'c-low')+'">'+R.counts.Medium+'</div><div class="l">Medium</div></div><div class="tile"><div class="n c-low">'+R.counts.Low+'</div><div class="l">Low</div></div><div class="tile"><div class="n c-ok">'+R.passed.length+'</div><div class="l">Checks passed</div></div></div>';
     renderFindings();
 
     var ph;
     if(!R.permissions.length) ph='<div class="empty">This package does not request any API permissions.</div>';
     else ph='<div class="tbl"><table><thead><tr><th>Resource</th><th>Scope</th><th>Reach</th></tr></thead><tbody>'+R.permissions.map(function(p){ return '<tr><td>'+esc(p.resource)+'</td><td class="mono">'+esc(p.scope)+'</td><td><span class="chip '+LV[p.level]+'">'+esc(p.level)+'</span><div style="font-size:12.5px;color:var(--muted);margin-top:4px;">'+esc(p.why)+'</div></td></tr>'; }).join('')+'</tbody></table></div>'+
-      '<div class="note">SPFx permissions are delegated and approved once for the whole tenant. Approving them grants them to the shared SharePoint Online Client Extensibility principal, so every SPFx solution in the tenant can use them, not only this package.</div>';
+      '<div class="note">Approved permissions are added to the shared <b>SharePoint Online Client Extensibility</b> app, so they apply to the whole tenant and any client-side code can use them, not only this package. Removing the package later does <b>not</b> revoke them, and the package deploys and runs even if you deny the requests. Review requests under <b>API access</b> in the SharePoint admin center.</div>';
     document.getElementById('perms').innerHTML=ph;
 
-    var GL={third:['Third-party','med'],ms:['Microsoft','ok'],docs:['Docs / namespace','low']};
+    var GL={third:['Third-party','med'],tenant:['SharePoint tenant','med'],ms:['Microsoft','ok'],docs:['Docs / namespace','low']};
     document.getElementById('domains').innerHTML=!R.domains.length?'<div class="empty">No URLs found in the code.</div>':
       '<div class="tbl"><table><thead><tr><th>Domain</th><th>Group</th><th>Times</th><th>Found in</th></tr></thead><tbody>'+R.domains.slice(0,60).map(function(d){ return '<tr><td class="mono">'+esc(d.host)+(d.http?' <span class="chip low">http</span>':'')+'</td><td><span class="chip '+GL[d.group][1]+'">'+GL[d.group][0]+'</span></td><td>'+d.count+'</td><td class="mono">'+esc(d.files[0])+(d.files.length>1?' +'+(d.files.length-1):'')+'</td></tr>'; }).join('')+'</tbody></table></div>'+
       (R.domains.length>60?'<div class="empty">Showing 60 of '+R.domains.length+'. The JSON export has them all.</div>':'')+
@@ -747,46 +824,65 @@
       '<dt>Provisions on install</dt><dd>'+(provs?esc(provs):'Nothing')+'</dd></dl>';
 
     document.getElementById('compH').textContent='Components ('+R.components.length+')';
-    document.getElementById('comps').innerHTML=!R.components.length?'<div class="empty">No components found.</div>':R.components.map(function(c){
+    // long suites (20+ web parts) would stretch the side column; show the first few and let the user expand
+    var SHOW=8;
+    document.getElementById('comps').innerHTML=!R.components.length?'<div class="empty">No components found.</div>':R.components.map(function(c,i){
       var lbl=COMP_LABEL[c.extensionType]||COMP_LABEL[c.type]||c.type||'Component';
-      return '<div class="comp"><b>'+esc(c.name)+'</b><span>'+esc(lbl)+(c.version?' &middot; v'+esc(c.version):'')+'</span><span class="mono">'+esc(c.id)+'</span>'+(c.hosts.length?'<span>'+esc(c.hosts.join(', '))+'</span>':'')+'</div>'; }).join('');
+      return '<div class="comp"'+(i>=SHOW?' hidden':'')+'><b>'+esc(c.name)+'</b><span>'+esc(lbl)+(c.version?' &middot; v'+esc(c.version):'')+'</span><span class="mono">'+esc(c.id)+'</span>'+(c.hosts.length?'<span>'+esc(c.hosts.join(', '))+'</span>':'')+'</div>'; }).join('')+
+      (R.components.length>SHOW?'<button type="button" class="btn more" id="compMore" aria-expanded="false">Show all '+R.components.length+'</button>':'');
+    var cm=document.getElementById('compMore');
+    if(cm) cm.addEventListener('click',function(){ var open=cm.getAttribute('aria-expanded')!=='true';
+      document.querySelectorAll('#comps .comp').forEach(function(el,i){ if(i>=SHOW) el.hidden=!open; });
+      cm.setAttribute('aria-expanded',String(open)); cm.textContent=open?'Show fewer':'Show all '+R.components.length; });
 
-    var b=R.bundle, mx=b.top.length?b.top[0].size:1;
+    var b=R.bundle, mx=(b.top.length&&b.top[0].size)||1;
     document.getElementById('bundle').innerHTML=!b.packaged?'<div class="empty">No ClientSideAssets folder. The code is hosted outside the package, so it was not measured.</div>':
       '<dl class="kv"><dt>JavaScript files</dt><dd>'+b.jsCount+'</dd><dt>Total size</dt><dd>'+kb(b.jsTotal)+'</dd>'+(b.stale.length?'<dt>Old build files</dt><dd class="c-med">'+b.stale.length+' ('+kb(b.staleSize)+')</dd>':'')+(b.maps?'<dt>Source maps</dt><dd>'+b.maps+'</dd>':'')+'</dl>'+
       b.top.map(function(t){ return '<div class="brow"><div class="bn"><span title="'+esc(t.name)+'">'+esc(t.name)+'</span><span>'+kb(t.size)+'</span></div><div class="bar"><i style="width:'+Math.max(2,Math.round(t.size/mx*100))+'%"></i></div></div>'; }).join('');
 
     document.getElementById('passH').textContent='Checks passed ('+R.passed.length+')';
     document.getElementById('passed').innerHTML=R.passed.length?'<ul class="passed">'+R.passed.map(function(p){ return '<li>'+esc(p)+'</li>'; }).join('')+'</ul>':'<div class="empty">None.</div>';
-    window.scrollTo({top:0,behavior:'smooth'});
+    window.scrollTo({top:0});
+    // move keyboard and screen-reader focus to the new report
+    var st=document.getElementById('sumTitle'); if(st) st.focus({preventScroll:true});
   }
   function renderFindings(){
     var R=REPORT, n={All:R.findings.length,High:R.counts.High,Medium:R.counts.Medium,Low:R.counts.Low};
     document.getElementById('filters').innerHTML=['All','High','Medium','Low'].map(function(l){ return '<button type="button" class="fpill" data-f="'+l+'" aria-pressed="'+(l===FILTER)+'">'+l+' ('+n[l]+')</button>'; }).join('');
+    renderFindingList();
+  }
+  // filter clicks only redraw the list, so the pressed button keeps keyboard focus
+  function renderFindingList(){
+    var R=REPORT;
+    document.querySelectorAll('#filters .fpill').forEach(function(b){ b.setAttribute('aria-pressed',String(b.getAttribute('data-f')===FILTER)); });
     var list=R.findings.filter(function(f){ return FILTER==='All'||f.level===FILTER; });
     document.getElementById('findings').innerHTML=!list.length?'<div class="empty">'+(R.findings.length?'No findings at this severity.':'No findings. See the checks that passed.')+'</div>':list.map(function(f){
       return '<article class="find"><div class="fh"><span class="chip '+LV[f.level]+'">'+esc(f.level)+'</span><h4>'+esc(f.title)+'</h4></div><p>'+esc(f.detail)+'</p>'+(f.evidence?'<div class="ev">'+esc(f.evidence)+'</div>':'')+'<div class="todo"><b>What to do:</b> '+esc(f.fix)+'</div></article>'; }).join('');
   }
-  document.getElementById('filters').addEventListener('click',function(e){ var b=e.target.closest('[data-f]'); if(!b) return; FILTER=b.getAttribute('data-f'); renderFindings(); });
+  document.getElementById('filters').addEventListener('click',function(e){ var b=e.target.closest('[data-f]'); if(!b) return; FILTER=b.getAttribute('data-f'); renderFindingList(); });
 
   // ---- exports ----
   function download(name,type,body){ var a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([body],{type:type})); a.download=name; document.body.appendChild(a); a.click(); setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); },500); }
-  function stem(){ return (REPORT.file||'package').replace(/\.sppkg$/i,'').replace(/[^\w.\-]+/g,'_'); }
-  document.getElementById('btnJson').addEventListener('click',function(){ if(REPORT) download(stem()+'-inspection.json','application/json',JSON.stringify(Object.assign({tool:'SPFx Package Inspector',inspectedAt:new Date().toISOString()},REPORT),null,2)); });
+  function stem(){ return (REPORT.file||'package').replace(/\.sppkg$/i,'').replace(/[^\w.\-]+/g,'_').slice(0,80)||'package'; }
+  // package text goes into Markdown: keep it from breaking tables, code fences or adding links/HTML
+  // also break bare URLs so GitHub-flavoured Markdown does not auto-link them
+  function mdc(v){ return String(v==null?'':v).replace(/[\r\n]+/g,' ').replace(/([\\|`*_[\]<>])/g,'\\$1').replace(/:\/\//g,':&#8203;//').replace(/\bwww\./gi,'www&#8203;.'); }
+  function fence(v){ return String(v==null?'':v).replace(/```/g,'`​``'); }
+  document.getElementById('btnJson').addEventListener('click',function(){ if(REPORT) download(stem()+'-inspection.json','application/json',JSON.stringify(Object.assign({tool:'SPFx Package Inspector',toolVersion:TOOL_VERSION,inspectedAt:new Date().toISOString()},REPORT),null,2)); });
   document.getElementById('btnMd').addEventListener('click',function(){
     if(!REPORT) return; var R=REPORT, s=R.solution, L=[];
-    L.push('# SPFx package inspection: '+(s.title||s.name),'','| | |','|---|---|','| File | '+R.file+' ('+kb(R.fileSize)+') |','| Version | '+s.version+' |','| SPFx | '+(s.spfx||'unknown')+' |','| Solution ID | '+s.id+' |','| Publisher | '+(R.developer.name||'not stated')+' |','| Inspected | '+new Date().toISOString().slice(0,10)+' |','');
+    L.push('# SPFx package inspection: '+mdc(s.title||s.name),'','| | |','|---|---|','| File | '+mdc(R.file)+' ('+kb(R.fileSize)+') |','| Version | '+mdc(s.version)+' |','| SPFx | '+mdc(s.spfx||'unknown')+' |','| Solution ID | '+mdc(s.id)+' |','| Publisher | '+mdc(R.developer.name||'not stated')+' |','| Inspected | '+new Date().toISOString().slice(0,10)+' |','');
     L.push('**Result:** '+R.counts.High+' high, '+R.counts.Medium+' medium, '+R.counts.Low+' low, '+R.passed.length+' checks passed.','','## Findings','');
     if(!R.findings.length) L.push('None.','');
-    R.findings.forEach(function(f){ L.push('### ['+f.level+'] '+f.title,'',f.detail,'','```',f.evidence,'```','','**What to do:** '+f.fix,''); });
+    R.findings.forEach(function(f){ L.push('### ['+f.level+'] '+mdc(f.title),'',mdc(f.detail),'','```',fence(f.evidence),'```','','**What to do:** '+mdc(f.fix),''); });
     L.push('## API permission requests','');
-    if(!R.permissions.length) L.push('None.',''); else { L.push('| Resource | Scope | Reach |','|---|---|---|'); R.permissions.forEach(function(p){ L.push('| '+p.resource+' | `'+p.scope+'` | '+p.level+' |'); }); L.push(''); }
+    if(!R.permissions.length) L.push('None.',''); else { L.push('| Resource | Scope | Reach |','|---|---|---|'); R.permissions.forEach(function(p){ L.push('| '+mdc(p.resource)+' | '+mdc(p.scope)+' | '+p.level+' |'); }); L.push(''); }
     L.push('## Components','','| Name | Type | Version | ID |','|---|---|---|---|');
-    R.components.forEach(function(c){ L.push('| '+c.name+' | '+(COMP_LABEL[c.extensionType]||COMP_LABEL[c.type]||c.type)+' | '+c.version+' | `'+c.id+'` |'); });
+    R.components.forEach(function(c){ L.push('| '+mdc(c.name)+' | '+mdc(COMP_LABEL[c.extensionType]||COMP_LABEL[c.type]||c.type)+' | '+mdc(c.version)+' | '+mdc(c.id)+' |'); });
     L.push('','## Third-party domains in the code','');
-    var t=R.domains.filter(function(d){ return d.group==='third'; }); if(!t.length) L.push('None.'); else t.forEach(function(d){ L.push('- `'+d.host+'` ('+d.count+'×)'); });
+    var t=R.domains.filter(function(d){ return d.group==='third'; }); if(!t.length) L.push('None.'); else t.forEach(function(d){ L.push('- '+mdc(d.host)+' ('+d.count+'×)'); });
     L.push('','## Checks passed',''); R.passed.forEach(function(p){ L.push('- '+p); });
-    L.push('','---','Generated by SPFx Package Inspector (https://tools.fivenumber.com/spfx-package-inspector/). Static analysis only: a clean report does not prove a package is safe.');
+    L.push('','---','Generated by SPFx Package Inspector v'+TOOL_VERSION+' (https://tools.fivenumber.com/spfx-package-inspector/). Static analysis only: a clean report does not prove a package is safe.');
     download(stem()+'-inspection.md','text/markdown',L.join('\n'));
   });
 
@@ -794,28 +890,38 @@
   var statusEl=document.getElementById('status');
   function setStatus(msg,warn){ if(!msg){ statusEl.style.display='none'; return; } statusEl.className='status'+(warn?' warn':''); statusEl.style.display='flex';
     statusEl.innerHTML='<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">'+(warn?'<path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/>':'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>')+'</svg><span>'+esc(msg)+'</span>'; }
-  async function inspectFile(file){
+  function canInflate(){ try{ new DecompressionStream('deflate-raw'); return true; }catch(e){ return false; } }
+  // each run gets a token; a newer drop or "Inspect another" makes older runs discard their result
+  var RUN=0;
+  async function run(label,work){
+    var token=++RUN; setStatus('Reading '+label+'…');
+    try{ var R=await work(); if(token!==RUN) return; setStatus(''); render(R); }
+    catch(err){ if(token!==RUN) return; if(!(err&&err.friendly)&&window.console) console.error(err);
+      setStatus(err&&err.friendly?err.message:'The package could not be read. It may be damaged, or it is not an SPFx package.',true); }
+  }
+  function inspectFile(file){
     if(!file) return;
     if(!/\.sppkg$/i.test(file.name)){ setStatus('That is not an .sppkg file. Choose the package from sharepoint/solution in an SPFx project, or download it from the app catalog.',true); return; }
+    if(!file.size){ setStatus('That file is empty.',true); return; }
     if(file.size>MAX_FILE){ setStatus('That package is larger than 100 MB, which this tool does not read.',true); return; }
-    if(typeof DecompressionStream==='undefined'){ setStatus('Your browser cannot unzip files natively. Please use a current version of Edge, Chrome, Firefox or Safari.',true); return; }
-    setStatus('Reading '+file.name+'…');
-    try{
-      var z=openZip(await file.arrayBuffer());
-      var R=await analyze({fileName:file.name,fileSize:file.size,entries:z.entries,readText:z.readText});
-      setStatus(''); render(R);
-    }catch(err){ setStatus(err&&err.message?err.message:'The package could not be read.',true); }
+    if(typeof DecompressionStream==='undefined'||!canInflate()){ setStatus('Your browser cannot unzip files natively. Please use a current version of Edge, Chrome, Firefox or Safari.',true); return; }
+    run(file.name,async function(){ var z=openZip(await file.arrayBuffer()); return analyze({fileName:file.name,fileSize:file.size,entries:z.entries,readText:z.readText}); });
   }
   var fileInput=document.getElementById('file');
   fileInput.addEventListener('change',function(){ inspectFile(fileInput.files[0]); fileInput.value=''; });
   var dz=document.getElementById('dz');
-  ['dragenter','dragover'].forEach(function(t){ dz.addEventListener(t,function(e){ e.preventDefault(); dz.classList.add('over'); }); });
-  ['dragleave','drop'].forEach(function(t){ dz.addEventListener(t,function(e){ e.preventDefault(); dz.classList.remove('over'); }); });
-  dz.addEventListener('drop',function(e){ inspectFile(e.dataTransfer.files[0]); });
-  // a file dropped anywhere else should not navigate away from the page
+  // count enter/leave pairs: Safari gives no relatedTarget, so child elements would make the highlight flicker
+  var dzDepth=0;
+  dz.addEventListener('dragenter',function(e){ e.preventDefault(); dzDepth++; dz.classList.add('over'); });
+  dz.addEventListener('dragover',function(e){ e.preventDefault(); });
+  dz.addEventListener('dragleave',function(){ dzDepth=Math.max(0,dzDepth-1); if(!dzDepth) dz.classList.remove('over'); });
+  // a file dropped anywhere on the start screen is inspected; elsewhere it must not navigate away from the page
   window.addEventListener('dragover',function(e){ e.preventDefault(); });
-  window.addEventListener('drop',function(e){ e.preventDefault(); if(document.getElementById('start').style.display!=='none'&&e.dataTransfer.files[0]) inspectFile(e.dataTransfer.files[0]); });
-  document.getElementById('btnAgain').addEventListener('click',function(){ REPORT=null; document.getElementById('report').style.display='none'; document.getElementById('start').style.display=''; setStatus(''); window.scrollTo({top:0}); });
+  window.addEventListener('drop',function(e){ e.preventDefault(); dzDepth=0; dz.classList.remove('over');
+    var f=e.dataTransfer&&e.dataTransfer.files&&e.dataTransfer.files[0];
+    if(f&&document.getElementById('start').style.display!=='none') inspectFile(f); });
+  document.getElementById('btnAgain').addEventListener('click',function(){ RUN++; REPORT=null; document.getElementById('report').style.display='none'; document.getElementById('start').style.display=''; setStatus(''); window.scrollTo({top:0}); document.getElementById('file').focus(); });
+  window.addEventListener('unhandledrejection',function(e){ if(window.console) console.error(e.reason); });
 
   // ---- made-up sample package, built in memory and run through the same analyzer ----
   document.getElementById('btnSample').addEventListener('click',function(){
@@ -837,9 +943,7 @@
     };
     var sizes={'ClientSideAssets/team-news-web-part_3f9a1c2b4d5e6f708192.js':1373208,'ClientSideAssets/team-news-web-part_0aa1bb2cc3dd4ee5ff60.js':1301776,'ClientSideAssets/site-banner-application-customizer_77c1aa02bb03cc04dd05.js':429900};
     var entries=Object.keys(files).map(function(n){ return {name:n,size:sizes[n]||files[n].length}; });
-    setStatus('');
-    analyze({fileName:'acme-team-news.sppkg',fileSize:2203000,sample:true,entries:entries,readText:function(e){ return Promise.resolve(files[e.name]); }})
-      .then(render).catch(function(err){ setStatus(err.message,true); });
+    run('the sample package',function(){ return analyze({fileName:'acme-team-news.sppkg',fileSize:2203000,sample:true,entries:entries,readText:function(e){ return Promise.resolve(files[e.name]); }}); });
   });
 
   // ---- shared feedback dialog (portable across tools) ----
